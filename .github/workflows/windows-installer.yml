@@ -58,27 +58,31 @@ jobs:
       - name: Create portable ZIP (extrair e rodar OnixSystem.exe; sem instalador)
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist/OnixSystem/*" -DestinationPath "release/OnixSystem-portable.zip" -Force
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          if (-not (Test-Path "dist/OnixSystem/OnixSystem.exe")) { throw "dist ausente antes do zip" }
+          Compress-Archive -Path "dist\OnixSystem\*" -DestinationPath "release\OnixPortable.zip" -CompressionLevel Optimal -Force
+          Get-Item "release\OnixPortable.zip" | Format-List Name, Length
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OnixSystem-Setup
+          # Nome curto + prefixo: UI em PT as vezes traduz nomes longos
+          name: 01-Setup-exe
           path: release/OnixSystem-Setup.exe
           if-no-files-found: error
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OnixSystem-Dist
+          name: 02-Pasta-dist-PyInstaller
           path: dist/OnixSystem/**
           if-no-files-found: error
 
       - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: OnixSystem-Portable-ZIP
-          path: release/OnixSystem-portable.zip
+          name: 03-ZIP-Portable-sem-Inno
+          path: release/OnixPortable.zip
           if-no-files-found: error
 
       - name: Resolve release tag

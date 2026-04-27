@@ -103,15 +103,17 @@ Fluxo sugerido no assistente de instalacao:
 
 ## 4) Artefatos no GitHub Actions
 
-Depois de um workflow **verde**, ha tres formas de obter o programa:
+Depois de um workflow **verde**, aparecem **tres downloads** (nomes podem vir traduzidos pela interface em portugues — procure pelos prefixos **01**, **02**, **03**):
 
-| Artefato | Uso |
-|----------|-----|
-| **OnixSystem-Setup** | Instalador classico (`OnixSystem-Setup.exe`). Instala em `Program Files` e cria atalhos. |
-| **OnixSystem-Portable-ZIP** | Um **ZIP** com a pasta completa do PyInstaller. Extraia em qualquer pasta (ex.: `C:\OnixSystemInstall`) e execute **`OnixSystem.exe`** direto — **nao precisa** do instalador Inno. |
-| **OnixSystem-Dist** | Igual ao conteudo da pasta `dist` (sem zip unico); util para debug. |
+| Nome no workflow | Conteudo |
+|------------------|----------|
+| **01-Setup-exe** | Instalador `OnixSystem-Setup.exe` (Inno Setup). |
+| **02-Pasta-dist-PyInstaller** | Pasta que o PyInstaller gerou. O GitHub entrega um **ZIP ao baixar** — extraia e rode **`OnixSystem.exe`** dentro (portatil **sem** Inno). |
+| **03-ZIP-Portable-sem-Inno** | Um ZIP pronto (`OnixPortable.zip`) com o mesmo da pasta dist — extraia em qualquer lugar e execute **`OnixSystem.exe`**. |
 
-Se o instalador nao copiar arquivos para `Program Files`, use o **Portable ZIP** para validar o app; o problema fica isolado no Inno Setup.
+**Se nao achar “portable”:** use **`02-Pasta-dist-PyInstaller`** — e a mesma coisa (extrair e rodar o `.exe`). O **`03`** so empacota isso num ZIP unico para facilitar.
+
+Se o instalador (`01`) nao copiar arquivos para `Program Files`, use **`02`** ou **`03`** para validar o app.
 
 ## 5) Atualizacoes futuras
 
