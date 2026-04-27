@@ -29,6 +29,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#RepoRoot}\dist\OnixSystem\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+; Modelo de configuracao — na primeira instalacao copiamos para config.local.json se ainda nao existir (ver [Code]).
+Source: "{#RepoRoot}\scripts\config.local.example.json"; DestDir: "{app}"; DestName: "config.local.example.json"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\Onix System"; Filename: "{app}\OnixSystem.exe"
@@ -36,3 +38,17 @@ Name: "{autodesktop}\Onix System"; Filename: "{app}\OnixSystem.exe"; Tasks: desk
 
 [Run]
 Filename: "{app}\OnixSystem.exe"; Description: "{cm:LaunchProgram,Onix System}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    if (not FileExists(ExpandConstant('{app}\config.local.json'))) and
+       FileExists(ExpandConstant('{app}\config.local.example.json')) then
+      FileCopy(
+        ExpandConstant('{app}\config.local.example.json'),
+        ExpandConstant('{app}\config.local.json'),
+        False);
+  end;
+end;

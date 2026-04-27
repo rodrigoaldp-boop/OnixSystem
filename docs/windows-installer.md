@@ -95,7 +95,9 @@ Fluxo sugerido no assistente de instalacao:
 
 ## 3) Arquivo de configuracao por maquina
 
-- arquivo: `config.local.json`
+- arquivo: **`config.local.json`** na **mesma pasta do `OnixSystem.exe`** (tipicamente `C:\Program Files\OnixSystem\`).
+- O instalador tambem copia **`config.local.example.json`** como modelo e, na **primeira instalacao**, gera **`config.local.json`** a partir dele se voce ainda nao tiver esse arquivo (edite host, porta, nome do banco, usuario e senha).
+- Prefira salvar como **UTF-8** no Notepad (Salvar como → Codificação UTF-8).
 - cada computador pode apontar para o mesmo PostgreSQL ou bancos diferentes
 - alteracoes de banco nao exigem reinstalacao (somente salvar e reiniciar)
 
