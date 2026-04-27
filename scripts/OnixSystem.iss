@@ -1,3 +1,7 @@
+; Caminhos relativos a esta pasta (scripts/), para nao depender de /DMyAppRoot no ISCC.
+; Evita instalador vazio quando o .iss e compilado pelo assistente sem defines.
+#define RepoRoot ".."
+
 [Setup]
 AppId={{7F8D2CE8-4D10-4EAF-A7DB-2C8EF13D4B2A}
 AppName=Onix System
@@ -6,7 +10,7 @@ AppPublisher=Onix System
 DefaultDirName={autopf}\OnixSystem
 DefaultGroupName=Onix System
 DisableProgramGroupPage=yes
-OutputDir={#MyAppRoot}\release
+OutputDir={#RepoRoot}\release
 OutputBaseFilename=OnixSystem-Setup
 Compression=lzma
 SolidCompression=yes
@@ -21,7 +25,7 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#MyAppRoot}\dist\OnixSystem\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: "{#RepoRoot}\dist\OnixSystem\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\Onix System"; Filename: "{app}\OnixSystem.exe"

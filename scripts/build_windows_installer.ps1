@@ -31,7 +31,7 @@ if (Test-Path $innoCompiler) {
   }
 
   Write-Host "Inno Setup encontrado. Gerando setup.exe..."
-  & $innoCompiler "/DMyAppRoot=$root" $innoScript
+  & $innoCompiler $innoScript
   Write-Host "Instalador gerado em .\release\OnixSystem-Setup.exe"
 } else {
   Write-Host "Inno Setup nao encontrado."

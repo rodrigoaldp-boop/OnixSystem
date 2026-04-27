@@ -79,15 +79,9 @@ Se voce ja rodou o script ate gerar `dist\OnixSystem\` e so quer compilar o inst
 2. File → Open → `scripts\OnixSystem.iss`.
 3. Build → Compile (ou `Ctrl+F9`).
 
-Se o compilador reclamar do caminho base, em **Project → Compiler Options → Preprocessor → User defines** adicione:
+O script `.iss` usa caminhos relativos (`..\dist\OnixSystem`, `..\release`); nao e necessario definir `MyAppRoot`, desde que **antes** exista `dist\OnixSystem\` (rode o PyInstaller pelo `build_windows_installer.ps1`).
 
-```text
-MyAppRoot=C:\dev\OnixSystem
-```
-
-(Use o caminho real onde esta a pasta do projeto no seu PC.)
-
-O `setup.exe` sai em `release\OnixSystem-Setup.exe` relativo a esse caminho.
+O `setup.exe` sai em `release\OnixSystem-Setup.exe` na raiz do projeto.
 
 Fluxo sugerido no assistente de instalacao:
 
