@@ -204,14 +204,21 @@ def _ajustar_schema_contas_receber_comissao_venda() -> None:
             conn.execute(text("ALTER TABLE contas_receber ADD COLUMN venda_id INTEGER"))
         if "comissao_gerada" not in colunas:
             conn.execute(text("ALTER TABLE contas_receber ADD COLUMN comissao_gerada BOOLEAN DEFAULT FALSE"))
-            conn.execute(text("UPDATE contas_receber SET comissao_gerada = FALSE WHERE comissao_gerada IS NULL"))
+            conn.execute(text("UPDATE contas_receber SET comissao_gerada = FALSE WHERE comissao_gerada IS NULL")    )
 
 
-_ajustar_schema_cadastros()
-_ajustar_schema_contas_correntes()
-_ajustar_schema_movimentacoes()
-_ajustar_schema_cartoes_e_contas_pagar()
-_ajustar_schema_contas_receber_comissao_venda()
+try:
+    _ajustar_schema_cadastros()
+    _ajustar_schema_contas_correntes()
+    _ajustar_schema_movimentacoes()
+    _ajustar_schema_cartoes_e_contas_pagar()
+    _ajustar_schema_contas_receber_comissao_venda()
+except Exception as exc:
+    _relatar_falha_inicial(
+        exc,
+        "Falha ao aplicar migracoes iniciais do banco (apos criar tabelas).\n"
+        "Verifique PostgreSQL, permissoes do usuario do banco e o arquivo config.local.json.",
+    )
 
 
 def _ajustar_schema_categorias_produto() -> None:
@@ -283,8 +290,15 @@ def _remover_categoria_comissionados_obsoleta() -> None:
         conn.execute(text("DELETE FROM categorias_produto WHERE id = :com_id"), {"com_id": com_id})
 
 
-_ajustar_schema_categorias_produto()
-_remover_categoria_comissionados_obsoleta()
+try:
+    _ajustar_schema_categorias_produto()
+    _remover_categoria_comissionados_obsoleta()
+except Exception as exc:
+    _relatar_falha_inicial(
+        exc,
+        "Falha ao ajustar categorias de produto / migracao de dados.\n"
+        "Verifique integridade do banco e permissoes.",
+    )
 
 
 def _ajustar_schema_vendas_prazo_condicao_catalogo() -> None:
@@ -12040,6 +12054,7 @@ def app_demo():
 if __name__ == "__main__":
     import threading
     import time
+    import traceback
     import webbrowser
 
     import uvicorn
@@ -12048,11 +12063,27 @@ if __name__ == "__main__":
         time.sleep(1.2)
         webbrowser.open("http://127.0.0.1:8000/")
 
-    threading.Thread(target=_abrir_navegador, daemon=True).start()
+    try:
+        threading.Thread(target=_abrir_navegador, daemon=True).start()
 
-    uvicorn.run(
-        app,
-        host="127.0.0.1",
-        port=8000,
-        log_level="info",
-    )
+        uvicorn.run(
+            app,
+            host="127.0.0.1",
+            port=8000,
+            log_level="info",
+        )
+    except Exception as exc:
+        tb = traceback.format_exc()
+        print(tb, file=sys.stderr)
+        log_path = _install_log_dir() / "onixsystem-startup-error.log"
+        try:
+            log_path.write_text(
+                f"Falha ao iniciar o servidor HTTP (porta 8000 em uso ou outro erro).\n\n{tb}",
+                encoding="utf-8",
+            )
+            print(f"\nLog salvo em: {log_path}", file=sys.stderr)
+        except Exception:
+            pass
+        if getattr(sys, "frozen", False):
+            input("Pressione Enter para fechar...")
+        raise SystemExit(1) from exc
