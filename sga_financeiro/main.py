@@ -66,8 +66,42 @@ from sga_financeiro.routes import (
     vendas,
 )
 
+
+def _install_log_dir() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parent.parent
+
+
+def _relatar_falha_inicial(exc: Exception, mensagem: str) -> None:
+    import traceback
+
+    tb = traceback.format_exc()
+    texto = f"{mensagem}\n\n{tb}"
+    print(texto, file=sys.stderr)
+    log_path = _install_log_dir() / "onixsystem-startup-error.log"
+    try:
+        log_path.write_text(texto, encoding="utf-8")
+        print(f"\nLog salvo em: {log_path}", file=sys.stderr)
+    except Exception:
+        pass
+    if getattr(sys, "frozen", False):
+        input("Pressione Enter para fechar...")
+        raise SystemExit(1) from exc
+    raise
+
+
 # Em ambiente inicial, criamos as tabelas automaticamente.
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as exc:
+    _relatar_falha_inicial(
+        exc,
+        "Falha ao conectar ao PostgreSQL ou criar tabelas.\n"
+        "- Servidor PostgreSQL rodando?\n"
+        "- Arquivo config.local.json ao lado do OnixSystem.exe com host, porta, banco, usuario e senha?\n"
+        "- Firewall liberado para a porta do PostgreSQL?",
+    )
 
 
 def _ajustar_schema_cadastros() -> None:
