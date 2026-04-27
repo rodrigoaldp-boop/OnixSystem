@@ -101,7 +101,19 @@ Fluxo sugerido no assistente de instalacao:
 - cada computador pode apontar para o mesmo PostgreSQL ou bancos diferentes
 - alteracoes de banco nao exigem reinstalacao (somente salvar e reiniciar)
 
-## 4) Atualizacoes futuras
+## 4) Artefatos no GitHub Actions
+
+Depois de um workflow **verde**, ha tres formas de obter o programa:
+
+| Artefato | Uso |
+|----------|-----|
+| **OnixSystem-Setup** | Instalador classico (`OnixSystem-Setup.exe`). Instala em `Program Files` e cria atalhos. |
+| **OnixSystem-Portable-ZIP** | Um **ZIP** com a pasta completa do PyInstaller. Extraia em qualquer pasta (ex.: `C:\OnixSystemInstall`) e execute **`OnixSystem.exe`** direto — **nao precisa** do instalador Inno. |
+| **OnixSystem-Dist** | Igual ao conteudo da pasta `dist` (sem zip unico); util para debug. |
+
+Se o instalador nao copiar arquivos para `Program Files`, use o **Portable ZIP** para validar o app; o problema fica isolado no Inno Setup.
+
+## 5) Atualizacoes futuras
 
 - o usuario pode verificar e aplicar update no proprio sistema
 - fluxo com snapshot e rollback manual ja disponivel no painel de atualizacoes

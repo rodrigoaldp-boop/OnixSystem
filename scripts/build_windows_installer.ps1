@@ -35,9 +35,27 @@ if (Test-Path $innoCompiler) {
     throw "PyInstaller nao gerou dist\OnixSystem\OnixSystem.exe em: $distPayload"
   }
 
+  # Inno Setup inclui scripts/_generated_paths.iss com caminhos ABSOLUTOS (evita instalador vazio).
+  $rootAbs = (Resolve-Path $root).Path
+  $payloadAbs = (Resolve-Path $distPayload).Path
+  $exampleAbs = (Resolve-Path (Join-Path $root "scripts\config.local.example.json")).Path
+  foreach ($p in @($payloadAbs, $exampleAbs)) {
+    if (-not (Test-Path $p)) { throw "Arquivo/pasta esperado pelo Inno nao existe: $p" }
+  }
+  $rootIss = $rootAbs.Replace("\", "/")
+  $payloadIss = $payloadAbs.Replace("\", "/")
+  $exampleIss = $exampleAbs.Replace("\", "/")
+  $generatedIss = Join-Path $root "scripts\_generated_paths.iss"
+  $generatedBody = @"
+; AUTO-GERADO por build_windows_installer.ps1 — nao editar
+#define RepoRoot "$rootIss"
+#define PayloadRoot "$payloadIss"
+#define ExampleConfigPath "$exampleIss"
+"@
+  [System.IO.File]::WriteAllText($generatedIss, $generatedBody.TrimEnd() + "`r`n", [System.Text.UTF8Encoding]::new($false))
+
   Write-Host "Inno Setup encontrado. Gerando setup.exe..."
-  # Caminho absoluto evita instalador sem arquivos se o ISCC resolver relativo errado.
-  & $innoCompiler "/DRepoRoot=$root" $innoScript
+  & $innoCompiler $innoScript
   Write-Host "Instalador gerado em .\release\OnixSystem-Setup.exe"
 } else {
   Write-Host "Inno Setup nao encontrado."

@@ -55,6 +55,11 @@ jobs:
             throw "OnixSystem-Setup.exe muito pequeno ($bytes b); instalador provavelmente sem payload."
           }
 
+      - name: Create portable ZIP (extrair e rodar OnixSystem.exe; sem instalador)
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/OnixSystem/*" -DestinationPath "release/OnixSystem-portable.zip" -Force
+
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
@@ -67,6 +72,13 @@ jobs:
         with:
           name: OnixSystem-Dist
           path: dist/OnixSystem/**
+          if-no-files-found: error
+
+      - name: Upload portable ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: OnixSystem-Portable-ZIP
+          path: release/OnixSystem-portable.zip
           if-no-files-found: error
 
       - name: Resolve release tag

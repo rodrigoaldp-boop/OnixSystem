@@ -1,9 +1,6 @@
-; RepoRoot = raiz do repositorio (pasta que contem dist\ e release\).
-; Build pelo script PowerShell passa /DRepoRoot=C:\...\OnixSystem (absoluto).
-; Compilar manual pelo Inno: User defines -> RepoRoot=C:\caminho\completo\DoProjeto
-#ifndef RepoRoot
-#define RepoRoot ".."
-#endif
+; Inclui caminhos absolutos gerados por build_windows_installer.ps1 (scripts/_generated_paths.iss).
+; Sem esse include, compile pelo script / CI, nao abra o Inno "as cegas" na pasta errada.
+#include "_generated_paths.iss"
 
 [Setup]
 AppId={{7F8D2CE8-4D10-4EAF-A7DB-2C8EF13D4B2A}
@@ -28,9 +25,8 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#RepoRoot}\dist\OnixSystem\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
-; Modelo de configuracao — na primeira instalacao copiamos para config.local.json se ainda nao existir (ver [Code]).
-Source: "{#RepoRoot}\scripts\config.local.example.json"; DestDir: "{app}"; DestName: "config.local.example.json"; Flags: ignoreversion
+Source: "{#PayloadRoot}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
+Source: "{#ExampleConfigPath}"; DestDir: "{app}"; DestName: "config.local.example.json"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\Onix System"; Filename: "{app}\OnixSystem.exe"

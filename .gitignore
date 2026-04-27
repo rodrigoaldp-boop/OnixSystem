@@ -10,6 +10,7 @@ config.local.json
 dist/
 build/
 *.spec
+scripts/_generated_paths.iss
 
 # Cursor / IDE
 .chk.js
