@@ -1,0 +1,32 @@
+# Ambiente e segredos
+.env
+.venv/
+sga_financeiro/.venv/
+
+# Configuracao local (nao commitar)
+config.local.json
+
+# Build PyInstaller
+dist/
+build/
+*.spec
+
+# Cursor / IDE
+.chk.js
+
+# Backups locais de restauracao
+restore-points/
+
+# Certificados e saidas NF-e locais (nao versionar)
+*.pfx
+*.p12
+sga_financeiro/certs/
+sga_financeiro/nfe_out/
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so

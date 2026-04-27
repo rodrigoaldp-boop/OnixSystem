@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "ambiente": "homologacao",
+  "uf": "PR",
+  "cert_path": "/root/home/projetos/OnixSystem/sga_financeiro/certs/nfe_a1_certificado.pfx",
+  "cert_password": "250103",
+  "cnpj_emitente": "44830965000187",
+  "ie_emitente": "90927049-95",
+  "cnae_principal": "6204-0/00 - Consultoria em tecnologia da informação",
+  "cnaes_secundarios": "3312-1/02 - Manutenção e reparação de aparelhos e instrumentos de medida, teste e controle; 3314-7/10 - Manutenção e reparação de máquinas e equipamentos para uso geral não especificados; 4752-1/00 - Comércio varejista especializado de equipamentos de telefonia e comunicação; 4751-2/01 - Comércio varejista especializado de equipamentos e suprimentos de informática",
+  "crt": "simples",
+  "serie": 2,
+  "cfop_padrao": "5102",
+  "csosn_padrao": "0102",
+  "id_csrt": "1",
+  "csrt": "LJP0Z0L3S5115996F9P0HFGXH4G53TFSP22O",
+  "cnpj_responsavel_tecnico": "11448328000191"
+}

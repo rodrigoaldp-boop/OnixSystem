@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic
+pydantic-settings
+email-validator
+python-dotenv
+python-multipart
+reportlab
+cryptography
+lxml
+signxml
+requests
+zeep
