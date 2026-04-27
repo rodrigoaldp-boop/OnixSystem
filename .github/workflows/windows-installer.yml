@@ -38,6 +38,23 @@ jobs:
         shell: pwsh
         run: powershell -ExecutionPolicy Bypass -File .\scripts\build_windows_installer.ps1
 
+      - name: Verify build output
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist/OnixSystem/OnixSystem.exe")) {
+            throw "PyInstaller output missing: dist/OnixSystem/OnixSystem.exe"
+          }
+          $n = (Get-ChildItem -Path "dist/OnixSystem" -Recurse -File | Measure-Object).Count
+          if ($n -lt 5) { throw "dist/OnixSystem tem poucos arquivos ($n); build incompleto?" }
+          if (-not (Test-Path "release/OnixSystem-Setup.exe")) {
+            throw "Inno nao gerou release/OnixSystem-Setup.exe"
+          }
+          $bytes = (Get-Item "release/OnixSystem-Setup.exe").Length
+          Write-Host "setup.exe size: $bytes bytes"
+          if ($bytes -lt 4MB) {
+            throw "OnixSystem-Setup.exe muito pequeno ($bytes b); instalador provavelmente sem payload."
+          }
+
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:

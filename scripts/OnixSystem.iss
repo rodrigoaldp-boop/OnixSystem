@@ -1,6 +1,9 @@
-; Caminhos relativos a esta pasta (scripts/), para nao depender de /DMyAppRoot no ISCC.
-; Evita instalador vazio quando o .iss e compilado pelo assistente sem defines.
+; RepoRoot = raiz do repositorio (pasta que contem dist\ e release\).
+; Build pelo script PowerShell passa /DRepoRoot=C:\...\OnixSystem (absoluto).
+; Compilar manual pelo Inno: User defines -> RepoRoot=C:\caminho\completo\DoProjeto
+#ifndef RepoRoot
 #define RepoRoot ".."
+#endif
 
 [Setup]
 AppId={{7F8D2CE8-4D10-4EAF-A7DB-2C8EF13D4B2A}

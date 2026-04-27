@@ -30,8 +30,14 @@ if (Test-Path $innoCompiler) {
     throw "Arquivo Inno Setup nao encontrado: $innoScript"
   }
 
+  $distPayload = Join-Path $root "dist\OnixSystem"
+  if (!(Test-Path (Join-Path $distPayload "OnixSystem.exe"))) {
+    throw "PyInstaller nao gerou dist\OnixSystem\OnixSystem.exe em: $distPayload"
+  }
+
   Write-Host "Inno Setup encontrado. Gerando setup.exe..."
-  & $innoCompiler $innoScript
+  # Caminho absoluto evita instalador sem arquivos se o ISCC resolver relativo errado.
+  & $innoCompiler "/DRepoRoot=$root" $innoScript
   Write-Host "Instalador gerado em .\release\OnixSystem-Setup.exe"
 } else {
   Write-Host "Inno Setup nao encontrado."
