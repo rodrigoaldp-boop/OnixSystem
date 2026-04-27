@@ -2,7 +2,11 @@
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from sga_financeiro.env_bootstrap import aplicar_dotenv_no_ambiente
 from sga_financeiro.local_config import load_local_config, montar_database_url
+
+# Antes do Pydantic ler .env como UTF-8 estrito (quebra com Notepad ANSI no Windows).
+aplicar_dotenv_no_ambiente()
 
 class Settings(BaseSettings):
     """Configuracoes principais do Onix System."""
@@ -42,8 +46,6 @@ class Settings(BaseSettings):
     NFE_CSOSN_PADRAO: str = "0102"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
         case_sensitive=True,
     )
 

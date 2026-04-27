@@ -20,14 +20,28 @@ def local_config_path() -> Path:
     return _project_root() / "config.local.json"
 
 
+def _ler_texto_multiplas_codificacoes(path: Path) -> str | None:
+    """Le arquivo salvo como UTF-8 ou ANSI (Windows cp1252), comum em Notepad BR."""
+    if not path.is_file():
+        return None
+    raw = path.read_bytes()
+    for enc in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")
+
+
 def load_local_config() -> dict[str, Any]:
     path = local_config_path()
-    if not path.exists():
+    texto = _ler_texto_multiplas_codificacoes(path)
+    if texto is None:
         return {}
     try:
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        if isinstance(raw, dict):
-            return raw
+        parsed = json.loads(texto.strip() or "{}")
+        if isinstance(parsed, dict):
+            return parsed
     except Exception:
         pass
     return {}
