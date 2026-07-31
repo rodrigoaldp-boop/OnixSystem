@@ -95,7 +95,7 @@
           { v: Number(met.indisponiveis) || 0, color: '#94a3b8' }
         ];
         var tot = slices.reduce(function(a, b) { return a + b.v; }, 0);
-        return healthDashPieSvg(slices, tot ? String(tot) : '—');
+        return healthDashPieSvg(slices, tot ? String(tot) : '-');
       }
       if (id === 'servicos') {
         return healthDashPieSvg([
@@ -178,17 +178,17 @@
       var indisponiveis = Number(rg.indisponiveis) || 0;
       var quando = '';
       if (data && data.checked_at) {
-        try { quando = ' · ' + new Date(data.checked_at).toLocaleString('pt-BR'); } catch (eWhen) { quando = ''; }
+        try { quando = ' | ' + new Date(data.checked_at).toLocaleString('pt-BR'); } catch (eWhen) { quando = ''; }
       }
       if (erros > 0) {
         resumo.className = 'health-dash-summary health-dash-summary--erro';
-        resumo.textContent = 'Criticos: ' + erros + ' · alertas: ' + avisos + ' · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
+        resumo.textContent = 'Criticos: ' + erros + ' | alertas: ' + avisos + ' | ok: ' + normais + ' | indisponiveis: ' + indisponiveis + quando;
       } else if (avisos > 0 || !(data && data.ok)) {
         resumo.className = 'health-dash-summary health-dash-summary--warn';
-        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s) · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
+        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s) | ok: ' + normais + ' | indisponiveis: ' + indisponiveis + quando;
       } else {
         resumo.className = 'health-dash-summary health-dash-summary--ok';
-        resumo.textContent = 'Visao geral saudavel — ' + normais + ' verificacoes ok' + quando;
+        resumo.textContent = 'Visao geral saudavel - ' + normais + ' verificacoes ok' + quando;
       }
       if (man) man.style.display = 'none';
       grid.innerHTML = '';
@@ -218,13 +218,14 @@
         sum.className = 'health-dash-item-resumo';
         var _lab = healthDashStatusLabel(st);
         var _r = String(item.resumo || '');
-        sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\b/i.test(_r) ? _r : (_lab + ' — ' + _r));
+        // Sem escapes de barra no JS: o HTML vive em string Python triple-quote.
+        sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)(?![A-Za-z0-9_])/i.test(_r) ? _r : (_lab + ' - ' + _r));
         main.appendChild(tit);
         main.appendChild(sum);
         if (item.detalhe) {
           var det = document.createElement('div');
           det.className = 'health-dash-item-detalhe';
-          det.textContent = String(item.detalhe || '').split('\n').slice(0, 2).join(' · ');
+          det.textContent = String(item.detalhe || '').split(String.fromCharCode(10)).slice(0, 2).join(' | ');
           main.appendChild(det);
         }
         var chip = document.createElement('span');

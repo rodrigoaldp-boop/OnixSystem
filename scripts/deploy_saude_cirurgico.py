@@ -207,15 +207,23 @@ def _read_charts_asset(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _js_safe_for_python_triple_string(js: str) -> str:
+    """O frontend HTML vive dentro de triple-quotes em main.py.
+
+    Escapes JS como \\n/\\b sao interpretados pelo parser Python e quebram o JS servido.
+    """
+    return js.replace("\\", "\\\\")
+
+
 def patch_main_charts_v3(text: str) -> str:
     """Modal amplo sem scroll + graficos pizza/donut coloridos (idempotente)."""
     css = _read_charts_asset("health_dash_charts_v3.css").strip() + "\n"
-    js = _read_charts_asset("health_dash_charts_v3.js").strip() + "\n"
+    js = _js_safe_for_python_triple_string(_read_charts_asset("health_dash_charts_v3.js").strip() + "\n")
 
     if "HEALTH_DASH_CHARTS_V3_BEGIN" in text:
         text = re.sub(
             r"/\* HEALTH_DASH_CHARTS_V3_BEGIN \*/[\s\S]*?/\* HEALTH_DASH_CHARTS_V3_END \*/\s*",
-            css,
+            lambda _m: css,
             text,
             count=1,
         )
@@ -234,11 +242,10 @@ def patch_main_charts_v3(text: str) -> str:
     if "HEALTH_DASH_CHARTS_V3_JS_BEGIN" in text:
         text = re.sub(
             r"/\* HEALTH_DASH_CHARTS_V3_JS_BEGIN \*/[\s\S]*?/\* HEALTH_DASH_CHARTS_V3_JS_END \*/\s*",
-            js,
+            lambda _m: js,
             text,
             count=1,
         )
-        # Remove render antigo se ficou duplicado apos o bloco marcado? O bloco JA contem render.
         print("  ~ JS charts v3 atualizado")
         return text
 
@@ -414,7 +421,7 @@ def patch_main_js_polish(text: str) -> str:
     old_sum = "sum.textContent = healthDashStatusLabel(st) + ' — ' + String(item.resumo || '');"
     new_sum = (
         "var _lab = healthDashStatusLabel(st); var _r = String(item.resumo || ''); "
-        "sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\\b/i.test(_r) ? _r : (_lab + ' — ' + _r));"
+        "sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)(?!\\\\w)/i.test(_r) ? _r : (_lab + ' - ' + _r));"
     )
     if old_sum in text:
         text = text.replace(old_sum, new_sum)
