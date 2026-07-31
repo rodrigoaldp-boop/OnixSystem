@@ -1896,6 +1896,84 @@ def app_demo():
     .modal-box.modal-box--finance {
       width: min(940px, 96vw);
     }
+    #modalHealthDashboard .modal-box {
+      width: min(980px, 96vw);
+      max-height: 92vh;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      margin-bottom: 8px; flex-shrink: 0;
+    }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto; flex: 1; min-height: 0; padding-right: 2px;
+    }
+    #modalHealthDashboard .health-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    #modalHealthDashboard .health-dash-group-title {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+      margin: 12px 0 0;
+      padding-top: 6px;
+      border-top: 1px solid #e2e8f0;
+    }
+    #modalHealthDashboard .health-dash-group-title:first-child {
+      border-top: none; margin-top: 0; padding-top: 0;
+    }
+    #modalHealthDashboard .health-dash-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #16a34a; }
+    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706; background: #fffbeb; }
+    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c; background: #fff7ed; }
+    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626; background: #fef2f2; }
+    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #94a3b8; background: #f8fafc; }
+    #modalHealthDashboard .health-dash-item-title {
+      font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 4px;
+    }
+    #modalHealthDashboard .health-dash-item-resumo {
+      font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;
+    }
+    #modalHealthDashboard .health-dash-item-detalhe {
+      font-size: 11px; color: #64748b; line-height: 1.45; white-space: pre-line;
+    }
+    #modalHealthDashboard .health-dash-bar {
+      margin-top: 8px; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-bar > span {
+      display: block; height: 100%; background: #16a34a; border-radius: 999px;
+    }
+    #modalHealthDashboard .health-dash-bar.is-aviso > span { background: #d97706; }
+    #modalHealthDashboard .health-dash-bar.is-risco > span { background: #ea580c; }
+    #modalHealthDashboard .health-dash-bar.is-erro > span { background: #dc2626; }
+    #modalHealthDashboard .health-dash-bar-label {
+      font-size: 10px; color: #64748b; margin-top: 4px;
+    }
+    #modalHealthDashboard .health-dash-summary {
+      font-size: 12px; padding: 10px 12px; border-radius: 8px; margin-top: 4px;
+      border: 1px solid #e2e8f0; background: #f8fafc;
+    }
+    #modalHealthDashboard .health-dash-summary--ok { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
+    #modalHealthDashboard .health-dash-summary--warn { border-color: #fed7aa; background: #fff7ed; color: #9a3412; }
+    #modalHealthDashboard .health-dash-summary--erro { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+    #modalHealthDashboard .health-dash-manutencao {
+      margin-top: 12px; padding: 10px 12px; border: 1px dashed #cbd5e1; border-radius: 8px;
+      background: #f8fafc; color: #64748b; font-size: 12px; line-height: 1.45;
+    }
+    #modalHealthDashboard .health-dash-manutencao button[disabled] {
+      opacity: .55; cursor: not-allowed; margin-top: 8px;
+    }
+    @media (max-width: 640px) {
+      #modalHealthDashboard .health-dash-grid { grid-template-columns: 1fr; }
+    }
     .modal-box.modal-box--pedido-venda {
       width: min(1090px, 98vw);
       max-height: calc(92vh - 10px);
@@ -2888,6 +2966,7 @@ def app_demo():
         <div id="homeCfgAtualizacoes" data-aba="atualizacoes" class="tab-btn card-plano" role="button" tabindex="0">Atualizacoes do Sistema</div>
         <div id="homeCfgEvento" data-aba="evento" class="tab-btn card-produtos" role="button" tabindex="0">Configurar Evento</div>
         <div id="homeCfgBackup" data-aba="backup" class="tab-btn card-condpag" role="button" tabindex="0">Fazer Backup</div>
+        <div id="homeCfgHealth" data-aba="healthDash" class="tab-btn card-geral" role="button" tabindex="0">Saude do sistema</div>
         <div id="homeCfgRestore" data-aba="restore" class="tab-btn card-grupo" role="button" tabindex="0">Restaurar Backup</div>
       </div>
       <input id="restoreFileInputHome" type="file" accept=".db" class="hidden" onchange="restaurarBackup(this)" />
@@ -4339,6 +4418,29 @@ def app_demo():
     </div>
   </div>
 
+  <div id="modalHealthDashboard" class="modal-overlay hidden">
+    <div class="modal-box modal-box--finance">
+      <div class="health-dash-header">
+        <div style="font-weight:bold;">Saude do sistema</div>
+        <div style="display:flex; gap:8px;">
+          <button class="alt" type="button" onclick="void carregarHealthDashboard(true)">Atualizar</button>
+          <button class="alt" type="button" onclick="fecharModalHealthDashboard()">Fechar</button>
+        </div>
+      </div>
+      <div class="health-dash-body">
+        <p class="muted" style="font-size:12px;line-height:1.45;margin:0;">Diagnostico somente leitura do servidor e integracoes. Nao altera configuracoes nem reinicia servicos.</p>
+        <div id="healthDashResumo" class="health-dash-summary">Carregando...</div>
+        <div id="healthDashGrid" class="health-dash-grid"></div>
+        <div class="health-dash-manutencao" id="healthDashManutencao">
+          <strong>Manutencao assistida</strong>
+          <div>Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.</div>
+          <button type="button" disabled>Executar manutencao (em breve)</button>
+        </div>
+        <div id="statusModalHealthDashboard" class="status-line muted" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="modalCompraEstoque" class="modal-overlay hidden">
     <div class="modal-box modal-box--finance" style="width:min(980px,96vw);">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
@@ -5563,6 +5665,10 @@ def app_demo():
         fazerBackup();
         return;
       }
+      if (acao === 'healthDash') {
+        void abrirModalHealthDashboard();
+        return;
+      }
       if (acao === 'restore') {
         var fileEl = document.getElementById('restoreFileInputHome');
         if (fileEl) fileEl.click();
@@ -5591,6 +5697,170 @@ def app_demo():
       const modal = document.getElementById('modalConfigBanco');
       if (modal) modal.classList.add('hidden');
       setMsg('statusModalConfigBanco', '');
+    }
+
+    function healthDashStatusLabel(st) {
+      var s = String(st || '').toLowerCase();
+      if (s === 'ok') return 'OK';
+      if (s === 'aviso') return 'Atencao';
+      if (s === 'risco') return 'Risco';
+      if (s === 'erro') return 'Problema';
+      return 'Info';
+    }
+
+    function healthDashGrupoTitulo(grupo) {
+      var g = String(grupo || '').toLowerCase();
+      if (g === 'visao') return 'Visao geral';
+      if (g === 'recursos') return 'Recursos do servidor';
+      if (g === 'aplicacao') return 'Aplicacao e integracoes';
+      if (g === 'rede') return 'Rede e servicos';
+      if (g === 'armazenamento') return 'Armazenamento e backups';
+      if (g === 'seguranca') return 'Seguranca e certificados';
+      return 'Outros';
+    }
+
+    function healthDashApiHeaders() {
+      var h = {};
+      try {
+        if (usuarioSessaoAtivaId) h['X-Onix-Usuario-Id'] = String(usuarioSessaoAtivaId);
+      } catch (e) {}
+      return h;
+    }
+
+    function renderHealthDashboard(data) {
+      var resumo = document.getElementById('healthDashResumo');
+      var grid = document.getElementById('healthDashGrid');
+      var man = document.getElementById('healthDashManutencao');
+      if (!resumo || !grid) return;
+      var rg = (data && data.resumo_geral) || {};
+      var erros = Number(rg.erros) || 0;
+      var avisos = Number(rg.alertas) || 0;
+      var normais = Number(rg.normais) || 0;
+      var indisponiveis = Number(rg.indisponiveis) || 0;
+      var quando = '';
+      if (data && data.checked_at) {
+        try { quando = ' · ' + new Date(data.checked_at).toLocaleString('pt-BR'); } catch (eWhen) { quando = ''; }
+      }
+      if (erros > 0) {
+        resumo.className = 'health-dash-summary health-dash-summary--erro';
+        resumo.textContent = 'Itens criticos: ' + erros + ' erro(s), ' + avisos + ' alerta(s), ' + normais + ' ok, ' + indisponiveis + ' indisponivel(is)' + quando;
+      } else if (avisos > 0 || !(data && data.ok)) {
+        resumo.className = 'health-dash-summary health-dash-summary--warn';
+        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s), ' + normais + ' ok, ' + indisponiveis + ' indisponivel(is)' + quando;
+      } else {
+        resumo.className = 'health-dash-summary health-dash-summary--ok';
+        resumo.textContent = 'Todos normais (' + normais + ' verificacoes)' + quando;
+      }
+      if (man && data && data.manutencao) {
+        var msg = String(data.manutencao.mensagem || 'Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.');
+        man.innerHTML = '<strong>Manutencao assistida</strong><div>' + escapeHtml(msg) + '</div><button type="button" disabled>Executar manutencao (em breve)</button>';
+      }
+      grid.innerHTML = '';
+      var ordemGrupos = ['visao', 'recursos', 'aplicacao', 'rede', 'armazenamento', 'seguranca'];
+      var itens = Array.isArray(data && data.itens) ? data.itens.slice() : [];
+      var porGrupo = {};
+      itens.forEach(function(item) {
+        var g = String(item.grupo || 'aplicacao').toLowerCase();
+        if (!porGrupo[g]) porGrupo[g] = [];
+        porGrupo[g].push(item);
+      });
+      ordemGrupos.forEach(function(g) {
+        var lista = porGrupo[g] || [];
+        if (!lista.length) return;
+        var titG = document.createElement('div');
+        titG.className = 'health-dash-group-title';
+        titG.textContent = healthDashGrupoTitulo(g);
+        grid.appendChild(titG);
+        lista.forEach(function(item) {
+          var st = String(item.status || 'info').toLowerCase();
+          if (st !== 'ok' && st !== 'aviso' && st !== 'risco' && st !== 'erro') st = 'info';
+          var box = document.createElement('div');
+          box.className = 'health-dash-item health-dash-item--' + st;
+          var tit = document.createElement('div');
+          tit.className = 'health-dash-item-title';
+          tit.textContent = String(item.nome || item.id || 'Item');
+          var sum = document.createElement('div');
+          sum.className = 'health-dash-item-resumo';
+          sum.textContent = healthDashStatusLabel(st) + ' — ' + String(item.resumo || '');
+          box.appendChild(tit);
+          box.appendChild(sum);
+          if (item.detalhe) {
+            var det = document.createElement('div');
+            det.className = 'health-dash-item-detalhe';
+            det.textContent = String(item.detalhe || '');
+            box.appendChild(det);
+          }
+          var met = item.metricas || {};
+          if (met && met.barra_pct != null && Number.isFinite(Number(met.barra_pct))) {
+            var pct = Math.max(0, Math.min(100, Number(met.barra_pct)));
+            var barWrap = document.createElement('div');
+            barWrap.className = 'health-dash-bar';
+            if (st === 'aviso' || st === 'risco' || st === 'erro') barWrap.classList.add('is-' + st);
+            var fill = document.createElement('span');
+            fill.style.width = pct + '%';
+            barWrap.appendChild(fill);
+            box.appendChild(barWrap);
+            var lab = document.createElement('div');
+            lab.className = 'health-dash-bar-label';
+            lab.textContent = String(met.barra_label || 'Uso') + ': ' + pct + '%';
+            box.appendChild(lab);
+          }
+          if (met && met.barra_pct_swap != null && Number.isFinite(Number(met.barra_pct_swap))) {
+            var pctS = Math.max(0, Math.min(100, Number(met.barra_pct_swap)));
+            var barS = document.createElement('div');
+            barS.className = 'health-dash-bar';
+            if (pctS >= 90) barS.classList.add('is-erro');
+            else if (pctS >= 75) barS.classList.add('is-aviso');
+            var fillS = document.createElement('span');
+            fillS.style.width = pctS + '%';
+            barS.appendChild(fillS);
+            box.appendChild(barS);
+            var labS = document.createElement('div');
+            labS.className = 'health-dash-bar-label';
+            labS.textContent = 'Swap: ' + pctS + '%';
+            box.appendChild(labS);
+          }
+          grid.appendChild(box);
+        });
+      });
+    }
+
+    async function carregarHealthDashboard(forceRefresh) {
+      var resumo = document.getElementById('healthDashResumo');
+      var grid = document.getElementById('healthDashGrid');
+      if (resumo) {
+        resumo.className = 'health-dash-summary';
+        resumo.textContent = 'Carregando diagnostico...';
+      }
+      if (grid) grid.innerHTML = '';
+      setMsg('statusModalHealthDashboard', '');
+      try {
+        var q = forceRefresh ? '?refresh=1' : '';
+        var data = await api('/sistema/health-dashboard' + q, { headers: healthDashApiHeaders() });
+        renderHealthDashboard(data);
+      } catch (err) {
+        if (resumo) {
+          resumo.className = 'health-dash-summary health-dash-summary--erro';
+          resumo.textContent = 'Falha ao carregar diagnostico.';
+        }
+        setMsg('statusModalHealthDashboard', err.message, false);
+      }
+    }
+
+    async function abrirModalHealthDashboard() {
+      if (String(usuarioSessaoAtivaPerfil || '').toLowerCase() !== 'admin') {
+        setMsg('statusHomeConfig', 'Saude do sistema disponivel apenas para administradores.', false);
+        return;
+      }
+      var modal = document.getElementById('modalHealthDashboard');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      await carregarHealthDashboard(false);
+    }
+
+    function fecharModalHealthDashboard() {
+      var modal = document.getElementById('modalHealthDashboard');
+      if (modal) modal.classList.add('hidden');
     }
 
     function obterPayloadConfigBancoSistema() {
@@ -11899,6 +12169,7 @@ def app_demo():
         ['homeCfgAtualizacoes', 'atualizacoes'],
         ['homeCfgEvento', 'evento'],
         ['homeCfgBackup', 'backup'],
+        ['homeCfgHealth', 'healthDash'],
         ['homeCfgRestore', 'restore'],
       ];
       var i, par, el;
