@@ -200,6 +200,67 @@ def health_dashboard(
     return text
 
 
+def _read_charts_asset(name: str) -> str:
+    path = SCRIPT_DIR / name
+    if not path.is_file():
+        die(f"Asset ausente: {path}")
+    return path.read_text(encoding="utf-8")
+
+
+def patch_main_charts_v3(text: str) -> str:
+    """Modal amplo sem scroll + graficos pizza/donut coloridos (idempotente)."""
+    css = _read_charts_asset("health_dash_charts_v3.css").strip() + "\n"
+    js = _read_charts_asset("health_dash_charts_v3.js").strip() + "\n"
+
+    if "HEALTH_DASH_CHARTS_V3_BEGIN" in text:
+        text = re.sub(
+            r"/\* HEALTH_DASH_CHARTS_V3_BEGIN \*/[\s\S]*?/\* HEALTH_DASH_CHARTS_V3_END \*/\s*",
+            css,
+            text,
+            count=1,
+        )
+        print("  ~ CSS charts v3 atualizado")
+    else:
+        anchor = "#modalHealthDashboard .health-dash-grid"
+        idx = text.find(anchor)
+        if idx < 0:
+            idx = text.find("#modalHealthDashboard .health-dash-summary")
+        if idx < 0:
+            print("  aviso: nao achei ancora CSS para charts v3")
+        else:
+            text = text[:idx] + css + text[idx:]
+            print("  + CSS charts v3 inserido")
+
+    if "HEALTH_DASH_CHARTS_V3_JS_BEGIN" in text:
+        text = re.sub(
+            r"/\* HEALTH_DASH_CHARTS_V3_JS_BEGIN \*/[\s\S]*?/\* HEALTH_DASH_CHARTS_V3_JS_END \*/\s*",
+            js,
+            text,
+            count=1,
+        )
+        # Remove render antigo se ficou duplicado apos o bloco marcado? O bloco JA contem render.
+        print("  ~ JS charts v3 atualizado")
+        return text
+
+    # Substitui renderHealthDashboard existente pelo bloco com helpers + render.
+    m = re.search(
+        r"function renderHealthDashboard\(data\) \{[\s\S]*?\n    \}\n(?=\n    (?:async )?function )",
+        text,
+    )
+    if not m:
+        m = re.search(
+            r"function renderHealthDashboard\(data\) \{[\s\S]*?\n    \}\n",
+            text,
+        )
+    if not m:
+        print("  aviso: renderHealthDashboard nao encontrado para charts v3")
+        return text
+
+    text = text[: m.start()] + js + text[m.end() :]
+    print("  + JS charts v3 (pizza/donut) aplicado")
+    return text
+
+
 def patch_main_css(text: str) -> str:
     if "health-dash-item--risco" not in text or "health-dash-group-title" not in text:
         css = '''
@@ -600,8 +661,9 @@ def deploy_one(sga: Path, backup_root: Path) -> None:
     html = patch_health_status_label(html)
     html = patch_main_js(html)
     html = patch_main_js_polish(html)
+    html = patch_main_charts_v3(html)
     main_py.write_text(html, encoding="utf-8")
-    print("  patched main.py (CSS/JS/modal only)")
+    print("  patched main.py (CSS/JS/modal/charts)")
 
     # sanity: BotBot file still present and untouched content hash if existed
     if botbot.is_file():

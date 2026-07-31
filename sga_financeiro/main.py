@@ -1907,7 +1907,139 @@ def app_demo():
     #modalHealthDashboard .health-dash-body {
       overflow: auto; flex: 1; min-height: 0; padding-right: 2px;
     }
+    /* HEALTH_DASH_CHARTS_V3_BEGIN */
+    #modalHealthDashboard.modal-overlay {
+      align-items: center;
+      justify-content: center;
+      padding: 2.2vh 2vw;
+      background: rgba(15, 23, 42, .48);
+    }
+    #modalHealthDashboard .modal-box {
+      width: min(1280px, 94vw) !important;
+      height: min(88vh, 900px);
+      max-height: min(88vh, 900px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid #dbe3ef;
+      background:
+        radial-gradient(1200px 420px at 12% -10%, rgba(13, 148, 136, .10), transparent 55%),
+        radial-gradient(900px 380px at 100% 0%, rgba(245, 158, 11, .08), transparent 50%),
+        #f8fafc;
+      box-shadow: 0 28px 64px rgba(15, 23, 42, .28);
+      padding: 14px 16px 12px;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      margin-bottom: 6px; flex-shrink: 0;
+    }
+    #modalHealthDashboard .health-dash-header > div:first-child {
+      font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -.02em;
+    }
+    #modalHealthDashboard .health-dash-body {
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #modalHealthDashboard .health-dash-body > p.muted {
+      display: none;
+    }
+    #modalHealthDashboard .health-dash-summary {
+      flex-shrink: 0;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin: 0;
+      border: 1px solid #e2e8f0;
+      background: rgba(255,255,255,.82);
+      font-weight: 700;
+    }
+    #modalHealthDashboard .health-dash-summary--ok { border-color: #99f6e4; background: #f0fdfa; color: #0f766e; }
+    #modalHealthDashboard .health-dash-summary--warn { border-color: #fde68a; background: #fffbeb; color: #92400e; }
+    #modalHealthDashboard .health-dash-summary--erro { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
     #modalHealthDashboard .health-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+      align-content: stretch;
+      margin: 0;
+      overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-group-title { display: none; }
+    #modalHealthDashboard .health-dash-item {
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.92);
+      min-height: 0;
+      overflow: hidden;
+      box-shadow: 0 1px 0 rgba(15, 23, 42, .03);
+    }
+    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #0d9488; }
+    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706; background: #fffdf7; }
+    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c; background: #fff7ed; }
+    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626; background: #fef2f2; }
+    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #64748b; }
+    #modalHealthDashboard .health-dash-chart {
+      width: 78px; height: 78px; flex-shrink: 0;
+    }
+    #modalHealthDashboard .health-dash-chart svg { width: 78px; height: 78px; display: block; }
+    #modalHealthDashboard .health-dash-item-main { min-width: 0; }
+    #modalHealthDashboard .health-dash-item-title {
+      font-size: 12px; font-weight: 800; color: #0f172a; margin: 0 0 2px; line-height: 1.2;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #modalHealthDashboard .health-dash-item-resumo {
+      font-size: 11px; font-weight: 700; color: #334155; margin: 0 0 3px; line-height: 1.25;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-item-detalhe {
+      font-size: 10px; color: #64748b; line-height: 1.3; white-space: normal; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-chip {
+      display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 999px;
+      font-size: 9px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase;
+      background: #ecfeff; color: #0f766e; border: 1px solid #99f6e4;
+    }
+    #modalHealthDashboard .health-dash-chip.is-aviso { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    #modalHealthDashboard .health-dash-chip.is-risco,
+    #modalHealthDashboard .health-dash-chip.is-erro { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+    #modalHealthDashboard .health-dash-chip.is-info { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    #modalHealthDashboard .health-dash-bar,
+    #modalHealthDashboard .health-dash-bar-label { display: none; }
+    #modalHealthDashboard .health-dash-manutencao {
+      display: none;
+    }
+    #modalHealthDashboard #statusModalHealthDashboard {
+      flex-shrink: 0; margin-top: 2px !important; font-size: 11px;
+    }
+    @media (max-width: 1100px) {
+      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 860px) {
+      #modalHealthDashboard .modal-box { width: min(96vw, 960px) !important; height: min(90vh, 900px); }
+      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      #modalHealthDashboard .health-dash-chart,
+      #modalHealthDashboard .health-dash-chart svg { width: 68px; height: 68px; }
+      #modalHealthDashboard .health-dash-item { grid-template-columns: 68px minmax(0, 1fr); }
+    }
+    @media (max-width: 640px) {
+      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+      #modalHealthDashboard .health-dash-item-detalhe { -webkit-line-clamp: 1; }
+    }
+    /* HEALTH_DASH_CHARTS_V3_END */
+#modalHealthDashboard .health-dash-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 10px;
@@ -5727,6 +5859,174 @@ def app_demo():
       return h;
     }
 
+    /* HEALTH_DASH_CHARTS_V3_JS_BEGIN */
+    function healthDashChartColor(st) {
+      var s = String(st || '').toLowerCase();
+      if (s === 'ok') return '#0d9488';
+      if (s === 'aviso') return '#d97706';
+      if (s === 'risco') return '#ea580c';
+      if (s === 'erro') return '#dc2626';
+      return '#64748b';
+    }
+
+    function healthDashPolar(cx, cy, r, ang) {
+      return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) };
+    }
+
+    function healthDashPieSvg(slices, centerText) {
+      var size = 78, cx = 39, cy = 39, r = 30, inner = 18;
+      var total = 0;
+      (slices || []).forEach(function(sl) { total += Math.max(0, Number(sl.v) || 0); });
+      var parts = '';
+      if (total <= 0) {
+        parts = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#e2e8f0"></circle>' +
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
+      } else if (slices.length === 1 || (slices.filter(function(s){ return (Number(s.v)||0) > 0; }).length === 1)) {
+        var only = slices.filter(function(s){ return (Number(s.v)||0) > 0; })[0] || slices[0];
+        parts = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (only.color || '#0d9488') + '"></circle>' +
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
+      } else {
+        var ang = -Math.PI / 2;
+        slices.forEach(function(sl) {
+          var v = Math.max(0, Number(sl.v) || 0);
+          if (v <= 0) return;
+          var delta = (v / total) * Math.PI * 2;
+          if (delta >= Math.PI * 2 - 0.0001) {
+            parts += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (sl.color || '#0d9488') + '"></circle>';
+            return;
+          }
+          var a0 = ang;
+          var a1 = ang + delta;
+          var p0 = healthDashPolar(cx, cy, r, a0);
+          var p1 = healthDashPolar(cx, cy, r, a1);
+          var large = delta > Math.PI ? 1 : 0;
+          parts += '<path d="M ' + cx + ' ' + cy +
+            ' L ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) +
+            ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2) +
+            ' Z" fill="' + (sl.color || '#0d9488') + '"></path>';
+          ang = a1;
+        });
+        parts += '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
+      }
+      var label = String(centerText == null ? '' : centerText);
+      var font = label.length > 4 ? 10 : 12;
+      parts += '<text x="' + cx + '" y="' + (cy + 1) + '" text-anchor="middle" dominant-baseline="middle" ' +
+        'font-size="' + font + '" font-weight="800" fill="#0f172a">' + label.replace(/</g, '&lt;') + '</text>';
+      return '<svg viewBox="0 0 ' + size + ' ' + size + '" aria-hidden="true">' + parts + '</svg>';
+    }
+
+    function healthDashDonutPct(pct, color, centerText) {
+      var p = Math.max(0, Math.min(100, Number(pct) || 0));
+      var rest = Math.max(0.0001, 100 - p);
+      return healthDashPieSvg([
+        { v: p, color: color || '#0d9488' },
+        { v: rest, color: '#e2e8f0' }
+      ], centerText != null ? centerText : (Math.round(p) + '%'));
+    }
+
+    function healthDashMiniBars(rows) {
+      var list = (rows || []).slice(0, 4);
+      if (!list.length) return '';
+      var max = 0;
+      list.forEach(function(r) { max = Math.max(max, Number(r.v) || 0); });
+      if (max <= 0) max = 1;
+      var y = 8, h = 10, gap = 5, w = 78;
+      var parts = '';
+      list.forEach(function(r, idx) {
+        var val = Math.max(0, Number(r.v) || 0);
+        var bw = Math.max(2, (val / max) * (w - 4));
+        var yy = y + idx * (h + gap);
+        parts += '<rect x="2" y="' + yy + '" width="' + (w - 4) + '" height="' + h + '" rx="3" fill="#e2e8f0"></rect>';
+        parts += '<rect x="2" y="' + yy + '" width="' + bw.toFixed(1) + '" height="' + h + '" rx="3" fill="' + (r.color || '#0d9488') + '"></rect>';
+      });
+      var height = y + list.length * (h + gap);
+      return '<svg viewBox="0 0 ' + w + ' ' + height + '" aria-hidden="true">' + parts + '</svg>';
+    }
+
+    function healthDashChartForItem(item, st) {
+      var met = item.metricas || {};
+      var id = String(item.id || '');
+      var color = healthDashChartColor(st);
+
+      if (id === 'saude_geral') {
+        var slices = [
+          { v: Number(met.normais) || 0, color: '#0d9488' },
+          { v: Number(met.alertas) || 0, color: '#d97706' },
+          { v: Number(met.erros) || 0, color: '#dc2626' },
+          { v: Number(met.indisponiveis) || 0, color: '#94a3b8' }
+        ];
+        var tot = slices.reduce(function(a, b) { return a + b.v; }, 0);
+        return healthDashPieSvg(slices, tot ? String(tot) : '—');
+      }
+      if (id === 'servicos') {
+        return healthDashPieSvg([
+          { v: Number(met.ativos) || 0, color: '#0d9488' },
+          { v: Number(met.inativos) || 0, color: '#f59e0b' },
+          { v: Number(met.falha) || 0, color: '#dc2626' }
+        ], String(Number(met.ativos) || 0));
+      }
+      if (id === 'wireguard') {
+        var peers = Number(met.peers) || 0;
+        var ativos = Number(met.peers_ativos) || 0;
+        var inativos = Math.max(0, peers - ativos);
+        var pctWg = peers ? Math.round((ativos / peers) * 100) : 0;
+        return healthDashPieSvg([
+          { v: ativos, color: '#0d9488' },
+          { v: inativos, color: '#e2e8f0' }
+        ], pctWg + '%');
+      }
+      if (id === 'containers') {
+        return healthDashPieSvg([
+          { v: Number(met.ativos) || 0, color: '#0d9488' },
+          { v: Number(met.parados) || 0, color: '#f59e0b' },
+          { v: Math.max(0, (Number(met.imagens) || 0) - (Number(met.ativos) || 0)), color: '#cbd5e1' }
+        ], String(Number(met.ativos) || 0));
+      }
+      if (id === 'whatsapp') {
+        var okWa = met.worker_ativo && met.envio_habilitado;
+        return healthDashDonutPct(okWa ? 100 : (met.envio_habilitado ? 45 : 15), okWa ? '#0d9488' : color, okWa ? 'ON' : 'OFF');
+      }
+      if (id === 'nginx') {
+        return healthDashDonutPct(met.ativo ? 100 : 0, met.ativo ? '#0d9488' : '#dc2626', met.ativo ? 'UP' : 'DOWN');
+      }
+      if (id === 'certificado' && met.dias_restantes != null) {
+        var dias = Math.max(0, Number(met.dias_restantes) || 0);
+        var pctCert = Math.max(0, Math.min(100, (dias / 365) * 100));
+        return healthDashDonutPct(pctCert, color, String(Math.round(dias)) + 'd');
+      }
+      if (id === 'backup' && met.idade_horas != null) {
+        var idade = Math.max(0, Number(met.idade_horas) || 0);
+        var pctB = Math.max(0, Math.min(100, 100 - (idade / 24) * 100));
+        return healthDashDonutPct(pctB, color, (idade < 10 ? idade.toFixed(1) : Math.round(idade)) + 'h');
+      }
+      if (id === 'smtp' && met.latencia_ms != null) {
+        var lat = Math.max(0, Number(met.latencia_ms) || 0);
+        var pctSmtp = Math.max(0, Math.min(100, 100 - (lat / 1000) * 100));
+        return healthDashDonutPct(pctSmtp, color, Math.round(lat) + 'ms');
+      }
+      if (id === 'armazenamento' && Array.isArray(met.diretorios) && met.diretorios.length) {
+        var bars = met.diretorios.slice(0, 4).map(function(d, idx) {
+          var palette = ['#0d9488', '#0284c7', '#d97706', '#475569'];
+          return { v: Number(d.bytes) || 0, color: palette[idx % palette.length] };
+        });
+        return healthDashMiniBars(bars);
+      }
+      if (id === 'disco' && Array.isArray(met.particoes) && met.particoes.length > 1) {
+        return healthDashPieSvg(met.particoes.slice(0, 4).map(function(p, idx) {
+          var palette = ['#0d9488', '#0284c7', '#d97706', '#64748b'];
+          return { v: Math.max(0.1, Number(p.pct) || 0), color: palette[idx % palette.length] };
+        }), (Math.round(Number(met.barra_pct) || Number(met.pior_pct) || 0)) + '%');
+      }
+      if (met.barra_pct != null && isFinite(Number(met.barra_pct))) {
+        return healthDashDonutPct(Number(met.barra_pct), color);
+      }
+      if (st === 'ok') return healthDashDonutPct(100, '#0d9488', 'OK');
+      if (st === 'aviso') return healthDashDonutPct(66, '#d97706', '!');
+      if (st === 'risco') return healthDashDonutPct(80, '#ea580c', '!!');
+      if (st === 'erro') return healthDashDonutPct(100, '#dc2626', 'X');
+      return healthDashDonutPct(35, '#64748b', 'i');
+    }
+
     function renderHealthDashboard(data) {
       var resumo = document.getElementById('healthDashResumo');
       var grid = document.getElementById('healthDashGrid');
@@ -5743,91 +6043,66 @@ def app_demo():
       }
       if (erros > 0) {
         resumo.className = 'health-dash-summary health-dash-summary--erro';
-        resumo.textContent = 'Itens criticos: ' + erros + ' erro(s), ' + avisos + ' alerta(s), ' + normais + ' ok, ' + indisponiveis + ' indisponivel(is)' + quando;
+        resumo.textContent = 'Criticos: ' + erros + ' · alertas: ' + avisos + ' · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
       } else if (avisos > 0 || !(data && data.ok)) {
         resumo.className = 'health-dash-summary health-dash-summary--warn';
-        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s), ' + normais + ' ok, ' + indisponiveis + ' indisponivel(is)' + quando;
+        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s) · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
       } else {
         resumo.className = 'health-dash-summary health-dash-summary--ok';
-        resumo.textContent = 'Todos normais (' + normais + ' verificacoes)' + quando;
+        resumo.textContent = 'Visao geral saudavel — ' + normais + ' verificacoes ok' + quando;
       }
-      if (man && data && data.manutencao) {
-        var msg = String(data.manutencao.mensagem || 'Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.');
-        man.innerHTML = '<strong>Manutencao assistida</strong><div>' + escapeHtml(msg) + '</div><button type="button" disabled>Executar manutencao (em breve)</button>';
-      }
+      if (man) man.style.display = 'none';
       grid.innerHTML = '';
-      var ordemGrupos = ['visao', 'recursos', 'aplicacao', 'rede', 'armazenamento', 'seguranca'];
       var itens = Array.isArray(data && data.itens) ? data.itens.slice() : [];
-      var porGrupo = {};
-      itens.forEach(function(item) {
-        var g = String(item.grupo || 'aplicacao').toLowerCase();
-        if (!porGrupo[g]) porGrupo[g] = [];
-        porGrupo[g].push(item);
+      var ordem = ['saude_geral','cpu','memoria','disco','postgres','whatsapp','smtp','nginx','wireguard','containers','servicos','backup','armazenamento','certificado'];
+      var map = {};
+      itens.forEach(function(it) { map[String(it.id || '')] = it; });
+      var ordered = [];
+      ordem.forEach(function(id) { if (map[id]) ordered.push(map[id]); });
+      itens.forEach(function(it) {
+        if (ordem.indexOf(String(it.id || '')) < 0) ordered.push(it);
       });
-      ordemGrupos.forEach(function(g) {
-        var lista = porGrupo[g] || [];
-        if (!lista.length) return;
-        var titG = document.createElement('div');
-        titG.className = 'health-dash-group-title';
-        titG.textContent = healthDashGrupoTitulo(g);
-        grid.appendChild(titG);
-        lista.forEach(function(item) {
-          var st = String(item.status || 'info').toLowerCase();
-          if (st !== 'ok' && st !== 'aviso' && st !== 'risco' && st !== 'erro') st = 'info';
-          var box = document.createElement('div');
-          box.className = 'health-dash-item health-dash-item--' + st;
-          var tit = document.createElement('div');
-          tit.className = 'health-dash-item-title';
-          tit.textContent = String(item.nome || item.id || 'Item');
-          var sum = document.createElement('div');
-          sum.className = 'health-dash-item-resumo';
-          var _lab = healthDashStatusLabel(st);
-          var _r = String(item.resumo || '');
-          sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\b/i.test(_r) ? _r : (_lab + ' — ' + _r));
-          box.appendChild(tit);
-          box.appendChild(sum);
-          if (item.detalhe) {
-            var det = document.createElement('div');
-            det.className = 'health-dash-item-detalhe';
-            det.textContent = String(item.detalhe || '');
-            box.appendChild(det);
-          }
-          var met = item.metricas || {};
-          if (met && met.barra_pct != null && Number.isFinite(Number(met.barra_pct))) {
-            var pct = Math.max(0, Math.min(100, Number(met.barra_pct)));
-            var barWrap = document.createElement('div');
-            barWrap.className = 'health-dash-bar';
-            if (st === 'aviso' || st === 'risco' || st === 'erro') barWrap.classList.add('is-' + st);
-            var fill = document.createElement('span');
-            fill.style.width = pct + '%';
-            barWrap.appendChild(fill);
-            box.appendChild(barWrap);
-            var lab = document.createElement('div');
-            lab.className = 'health-dash-bar-label';
-            lab.textContent = String(met.barra_label || 'Uso') + ': ' + pct + '%';
-            box.appendChild(lab);
-          }
-          if (met && met.barra_pct_swap != null && Number.isFinite(Number(met.barra_pct_swap))) {
-            var pctS = Math.max(0, Math.min(100, Number(met.barra_pct_swap)));
-            var barS = document.createElement('div');
-            barS.className = 'health-dash-bar';
-            if (pctS >= 90) barS.classList.add('is-erro');
-            else if (pctS >= 75) barS.classList.add('is-aviso');
-            var fillS = document.createElement('span');
-            fillS.style.width = pctS + '%';
-            barS.appendChild(fillS);
-            box.appendChild(barS);
-            var labS = document.createElement('div');
-            labS.className = 'health-dash-bar-label';
-            labS.textContent = 'Swap: ' + pctS + '%';
-            box.appendChild(labS);
-          }
-          grid.appendChild(box);
-        });
+      ordered.forEach(function(item) {
+        var st = String(item.status || 'info').toLowerCase();
+        if (['ok','aviso','risco','erro','info'].indexOf(st) < 0) st = 'info';
+        var box = document.createElement('div');
+        box.className = 'health-dash-item health-dash-item--' + st;
+        var chart = document.createElement('div');
+        chart.className = 'health-dash-chart';
+        chart.innerHTML = healthDashChartForItem(item, st);
+        var main = document.createElement('div');
+        main.className = 'health-dash-item-main';
+        var tit = document.createElement('div');
+        tit.className = 'health-dash-item-title';
+        tit.textContent = String(item.nome || item.id || 'Item');
+        var sum = document.createElement('div');
+        sum.className = 'health-dash-item-resumo';
+        var _lab = healthDashStatusLabel(st);
+        var _r = String(item.resumo || '');
+        sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)/i.test(_r) ? _r : (_lab + ' — ' + _r));
+        main.appendChild(tit);
+        main.appendChild(sum);
+        if (item.detalhe) {
+          var det = document.createElement('div');
+          det.className = 'health-dash-item-detalhe';
+          det.textContent = String(item.detalhe || '').split('
+').slice(0, 2).join(' · ');
+          main.appendChild(det);
+        }
+        var chip = document.createElement('span');
+        chip.className = 'health-dash-chip' + (st !== 'ok' ? (' is-' + st) : '');
+        chip.textContent = healthDashStatusLabel(st);
+        main.appendChild(chip);
+        box.appendChild(chart);
+        box.appendChild(main);
+        grid.appendChild(box);
       });
+      if (typeof atualizarBadgeHealthDashboard === 'function') {
+        try { atualizarBadgeHealthDashboard(data); } catch (eBadge) {}
+      }
     }
-
-    async function carregarHealthDashboard(forceRefresh) {
+    /* HEALTH_DASH_CHARTS_V3_JS_END */
+async function carregarHealthDashboard(forceRefresh) {
       var resumo = document.getElementById('healthDashResumo');
       var grid = document.getElementById('healthDashGrid');
       if (resumo) {
