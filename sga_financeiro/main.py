@@ -5781,7 +5781,9 @@ def app_demo():
           tit.textContent = String(item.nome || item.id || 'Item');
           var sum = document.createElement('div');
           sum.className = 'health-dash-item-resumo';
-          sum.textContent = healthDashStatusLabel(st) + ' — ' + String(item.resumo || '');
+          var _lab = healthDashStatusLabel(st);
+          var _r = String(item.resumo || '');
+          sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\b/i.test(_r) ? _r : (_lab + ' — ' + _r));
           box.appendChild(tit);
           box.appendChild(sum);
           if (item.detalhe) {

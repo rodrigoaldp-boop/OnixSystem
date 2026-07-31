@@ -201,9 +201,8 @@ def health_dashboard(
 
 
 def patch_main_css(text: str) -> str:
-    if "health-dash-item--risco" in text and "health-dash-group-title" in text:
-        return text
-    css = '''
+    if "health-dash-item--risco" not in text or "health-dash-group-title" not in text:
+        css = '''
     #modalHealthDashboard .health-dash-group-title {
       grid-column: 1 / -1; font-size: 12px; font-weight: 800; color: #334155;
       margin: 12px 0 0; padding-top: 6px; border-top: 1px solid #e2e8f0;
@@ -222,48 +221,166 @@ def patch_main_css(text: str) -> str:
       margin-top: 12px; padding: 10px 12px; border: 1px dashed #cbd5e1; border-radius: 8px;
       background: #f8fafc; color: #64748b; font-size: 12px; line-height: 1.45;
     }
-    #modalHealthDashboard .health-dash-body { overflow: auto; max-height: min(70vh, 720px); }
 '''
-    anchor = "#modalHealthDashboard .health-dash-item--info"
-    idx = text.find(anchor)
-    if idx < 0:
-        print("  aviso: CSS health info nao encontrado; inserindo no fim do bloco health")
-        anchor2 = "#modalHealthDashboard .health-dash-summary--warn"
-        idx2 = text.find(anchor2)
-        if idx2 < 0:
-            return text
-        end = text.find("\n", idx2)
-        return text[:end] + "\n" + css + text[end:]
-    # inserir apos a linha do --info
-    end = text.find("\n", idx)
-    return text[:end] + "\n" + css + text[end:]
+        anchor = "#modalHealthDashboard .health-dash-item--info"
+        idx = text.find(anchor)
+        if idx < 0:
+            print("  aviso: CSS health info nao encontrado; inserindo no fim do bloco health")
+            anchor2 = "#modalHealthDashboard .health-dash-summary--warn"
+            idx2 = text.find(anchor2)
+            if idx2 >= 0:
+                end = text.find("\n", idx2)
+                text = text[:end] + "\n" + css + text[end:]
+        else:
+            end = text.find("\n", idx)
+            text = text[:end] + "\n" + css + text[end:]
+
+    # Layout scrollavel: modal-box overflow:hidden corta o grid se nao houver body flex.
+    if "HEALTH_DASH_LAYOUT_V2" not in text:
+        layout_css = '''
+    /* HEALTH_DASH_LAYOUT_V2 */
+    #modalHealthDashboard .modal-box {
+      width: min(980px, 96vw);
+      max-height: min(92vh, calc(100dvh - 24px));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      margin-bottom: 8px; flex-shrink: 0;
+    }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto; flex: 1; min-height: 0; padding-right: 2px;
+    }
+    #modalHealthDashboard .health-dash-summary--warn {
+      border-color: #fed7aa; background: #fff7ed; color: #9a3412;
+    }
+    #modalHealthDashboard .health-dash-summary--erro {
+      border-color: #fecaca; background: #fef2f2; color: #991b1b;
+    }
+'''
+        anchor = "#modalHealthDashboard .health-dash-grid"
+        idx = text.find(anchor)
+        if idx >= 0:
+            text = text[:idx] + layout_css + text[idx:]
+            print("  + CSS layout scrollavel do modal")
+        else:
+            print("  aviso: nao achei .health-dash-grid para inserir layout CSS")
+    return text
 
 
 def patch_main_modal(text: str) -> str:
-    if 'id="healthDashManutencao"' in text:
-        return text
     # botao Atualizar com refresh
     text = text.replace(
         'onclick="void carregarHealthDashboard()"',
         'onclick="void carregarHealthDashboard(true)"',
     )
-    # inserir bloco manutencao antes do status do modal
-    needle = '<div id="statusModalHealthDashboard"'
-    if needle not in text:
-        print("  aviso: statusModalHealthDashboard nao encontrado")
-        return text
-    bloco = '''      <div class="health-dash-manutencao" id="healthDashManutencao">
+    if 'id="healthDashManutencao"' not in text:
+        needle = '<div id="statusModalHealthDashboard"'
+        if needle not in text:
+            print("  aviso: statusModalHealthDashboard nao encontrado")
+        else:
+            bloco = '''      <div class="health-dash-manutencao" id="healthDashManutencao">
         <strong>Manutencao assistida</strong>
         <div>Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.</div>
         <button type="button" disabled>Executar manutencao (em breve)</button>
       </div>
       '''
-    return text.replace(needle, bloco + needle, 1)
+            text = text.replace(needle, bloco + needle, 1)
+
+    # Estrutura header/body para o modal nao cortar cards (overflow hidden do .modal-box).
+    if 'class="health-dash-body"' in text or "class='health-dash-body'" in text:
+        return text
+
+    m = re.search(
+        r'(<div id="modalHealthDashboard" class="modal-overlay hidden">\s*'
+        r'<div class="modal-box[^"]*"[^>]*>)\s*'
+        r'([\s\S]*?)'
+        r'(\s*</div>\s*</div>\s*\n\s*<div id="modalCompraEstoque")',
+        text,
+    )
+    if not m:
+        # fallback: fechar no overlay restaurar ou proximo modal
+        m = re.search(
+            r'(<div id="modalHealthDashboard" class="modal-overlay hidden">\s*'
+            r'<div class="modal-box[^"]*"[^>]*>)\s*'
+            r'([\s\S]*?)'
+            r'(\s*</div>\s*</div>\s*\n\s*<div id=")',
+            text,
+        )
+    if not m:
+        print("  aviso: nao consegui reestruturar HTML do modalHealthDashboard")
+        return text
+
+    inner = m.group(2).strip("\n")
+    # Remove width inline antigo; layout vai no CSS.
+    open_tag = re.sub(r'\sstyle="[^"]*"', "", m.group(1), count=1)
+    new_inner = (
+        '      <div class="health-dash-header">\n'
+        '        <div style="font-weight:bold;">Saude do sistema</div>\n'
+        '        <div style="display:flex; gap:8px;">\n'
+        '          <button class="alt" type="button" onclick="void carregarHealthDashboard(true)">Atualizar</button>\n'
+        '          <button class="alt" type="button" onclick="fecharModalHealthDashboard()">Fechar</button>\n'
+        "        </div>\n"
+        "      </div>\n"
+        '      <div class="health-dash-body">\n'
+    )
+    # Se o inner ja tinha cabecalho/titulo, descarta o cabecalho antigo e mantem o restante a partir do <p ou healthDashResumo
+    rest = inner
+    # corta cabecalho flex antigo se existir
+    rest2 = re.sub(
+        r'^[\s\S]*?(?=<p class="muted"|<div id="healthDashResumo")',
+        "",
+        rest,
+        count=1,
+    )
+    if rest2.strip():
+        rest = rest2
+    new_inner += rest
+    if "health-dash-body" not in new_inner[new_inner.find("health-dash-body") + 1 :]:
+        # fecha body antes do fechamento do modal-box (sera o group 3 start)
+        pass
+    rebuilt = open_tag + "\n" + new_inner.rstrip() + "\n      </div>\n" + m.group(3)
+    text = text[: m.start()] + rebuilt + text[m.end() :]
+    print("  + HTML modal com header/body scrollavel")
+    return text
+
+
+def patch_main_js_polish(text: str) -> str:
+    """Ajustes idempotentes no render: sem 'OK — OK', banner aviso != vermelho critico."""
+    # Evita prefixo duplicado no resumo do card
+    old_sum = "sum.textContent = healthDashStatusLabel(st) + ' — ' + String(item.resumo || '');"
+    new_sum = (
+        "var _lab = healthDashStatusLabel(st); var _r = String(item.resumo || ''); "
+        "sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\\b/i.test(_r) ? _r : (_lab + ' — ' + _r));"
+    )
+    if old_sum in text:
+        text = text.replace(old_sum, new_sum)
+        print("  + JS sem prefixo duplicado no resumo")
+
+    # Banner de aviso em laranja (nao vermelho de critico)
+    text2 = text.replace(
+        "resumo.className = 'health-dash-summary health-dash-summary--warn';\n"
+        "        resumo.textContent = 'Atencao: ' + avisos + ' alerta(s)",
+        "resumo.className = 'health-dash-summary health-dash-summary--warn';\n"
+        "        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s)",
+    )
+    if text2 != text:
+        text = text2
+    # Criticos usam --erro quando a classe existir no CSS
+    text = text.replace(
+        "resumo.className = 'health-dash-summary health-dash-summary--warn';\n"
+        "        resumo.textContent = 'Criticos: ' + erros",
+        "resumo.className = 'health-dash-summary health-dash-summary--erro';\n"
+        "        resumo.textContent = 'Criticos: ' + erros",
+    )
+    return text
 
 
 def patch_main_js(text: str) -> str:
     if "healthDashGrupoTitulo" in text and "barra_pct" in text and "resumo_geral" in text:
-        return text
+        return patch_main_js_polish(text)
 
     # Substitui renderHealthDashboard + carregarHealthDashboard por versao agrupada
     m_render = re.search(r"function renderHealthDashboard\(data\) \{[\s\S]*?\n    \}\n\n    function atualizarBadgeHealthDashboard", text)
@@ -299,11 +416,11 @@ def patch_main_js(text: str) -> str:
         try { quando = ' · ' + new Date(data.checked_at).toLocaleString('pt-BR'); } catch (eWhen) { quando = ''; }
       }
       if (erros > 0) {
-        resumo.className = 'health-dash-summary health-dash-summary--warn';
+        resumo.className = 'health-dash-summary health-dash-summary--erro';
         resumo.textContent = 'Criticos: ' + erros + ' · alertas: ' + avisos + ' · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
       } else if (avisos > 0 || !(data && data.ok)) {
         resumo.className = 'health-dash-summary health-dash-summary--warn';
-        resumo.textContent = 'Atencao: ' + avisos + ' alerta(s) · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
+        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s) · ok: ' + normais + ' · indisponiveis: ' + indisponiveis + quando;
       } else {
         resumo.className = 'health-dash-summary health-dash-summary--ok';
         resumo.textContent = 'Todos normais (' + normais + ' verificacoes)' + quando;
@@ -337,7 +454,8 @@ def patch_main_js(text: str) -> str:
           tit.textContent = String(item.nome || item.id || 'Item');
           var sum = document.createElement('div');
           sum.className = 'health-dash-item-resumo';
-          sum.textContent = healthDashStatusLabel(st) + ' — ' + String(item.resumo || '');
+          var _lab = healthDashStatusLabel(st); var _r = String(item.resumo || '');
+          sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)\b/i.test(_r) ? _r : (_lab + ' — ' + _r));
           box.appendChild(tit); box.appendChild(sum);
           if (item.detalhe) {
             var det = document.createElement('div');
@@ -407,7 +525,7 @@ def patch_main_js(text: str) -> str:
         text,
         count=1,
     )
-    return text2
+    return patch_main_js_polish(text2)
 
 
 def patch_health_status_label(text: str) -> str:
@@ -481,6 +599,7 @@ def deploy_one(sga: Path, backup_root: Path) -> None:
     html = patch_main_modal(html)
     html = patch_health_status_label(html)
     html = patch_main_js(html)
+    html = patch_main_js_polish(html)
     main_py.write_text(html, encoding="utf-8")
     print("  patched main.py (CSS/JS/modal only)")
 

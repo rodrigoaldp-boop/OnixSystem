@@ -289,5 +289,89 @@ class HealthAuthTests(unittest.TestCase):
         self.assertEqual(uid, 3)
 
 
+class HealthServicosAlertasTests(unittest.TestCase):
+    def test_podman_e_wg_template_idle_nao_geram_aviso(self):
+        def fake_show(name: str):
+            props = {
+                "onix-prod.service": {
+                    "LoadState": "loaded",
+                    "ActiveState": "active",
+                    "UnitFileState": "enabled",
+                    "FragmentPath": "/etc/systemd/system/onix-prod.service",
+                },
+                "postgresql-17.service": {
+                    "LoadState": "loaded",
+                    "ActiveState": "active",
+                    "UnitFileState": "enabled",
+                    "FragmentPath": "/usr/lib/systemd/system/postgresql-17.service",
+                },
+                "nginx.service": {
+                    "LoadState": "loaded",
+                    "ActiveState": "active",
+                    "UnitFileState": "enabled",
+                    "FragmentPath": "/usr/lib/systemd/system/nginx.service",
+                },
+                "podman.service": {
+                    "LoadState": "loaded",
+                    "ActiveState": "inactive",
+                    "UnitFileState": "disabled",
+                    "FragmentPath": "/usr/lib/systemd/system/podman.service",
+                },
+                "wg-quick@onix-wg.service": {
+                    "LoadState": "loaded",
+                    "ActiveState": "inactive",
+                    "UnitFileState": "disabled",
+                    "FragmentPath": "/usr/lib/systemd/system/wg-quick@.service",
+                },
+            }
+            return props.get(name)
+
+        with patch.object(hds, "_unit_show", side_effect=fake_show), patch.object(
+            hds, "_wg_interfaces", return_value=["onix-wg"]
+        ), patch.object(hds, "_run_cmd", return_value=(0, "active\n", "")):
+            item = hds.checar_servicos()
+        nomes = [x["nome"] for x in item["metricas"]["lista"]]
+        self.assertIn("onix-prod.service", nomes)
+        self.assertNotIn("podman.service", nomes)
+        self.assertNotIn("wg-quick@onix-wg.service", nomes)
+        self.assertNotIn("wg-quick@onix-rede.service", nomes)
+        self.assertEqual(item["status"], hds.STATUS_OK)
+
+    def test_contagem_banner_nao_duplica_saude_geral(self):
+        from contextlib import ExitStack
+
+        hds.limpar_cache_health()
+        with ExitStack() as stack:
+            stack.enter_context(
+                patch.object(
+                    hds,
+                    "checar_postgres",
+                    return_value=hds._item("postgres", "PG", hds.STATUS_AVISO, "conexoes altas"),
+                )
+            )
+            for p in [
+                patch.object(hds, "checar_whatsapp", return_value=hds._item("whatsapp", "WA", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_backup", return_value=hds._item("backup", "B", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_certificado", return_value=hds._item("certificado", "C", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_smtp", return_value=hds._item("smtp", "S", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_disco", return_value=hds._item("disco", "D", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_cpu", return_value=hds._item("cpu", "CPU", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_memoria", return_value=hds._item("memoria", "RAM", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_nginx", return_value=hds._item("nginx", "N", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_wireguard", return_value=hds._item("wireguard", "W", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_containers", return_value=hds._item("containers", "C", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_servicos", return_value=hds._item("servicos", "Svc", hds.STATUS_OK, "ok")),
+                patch.object(hds, "checar_armazenamento", return_value=hds._item("armazenamento", "A", hds.STATUS_OK, "ok")),
+            ]:
+                stack.enter_context(p)
+            payload = hds.coletar_health_dashboard(None, refresh=True)
+
+        self.assertEqual(payload["resumo_geral"]["alertas"], 1)
+        self.assertEqual(payload["alertas"], 1)
+        geral = next(i for i in payload["itens"] if i["id"] == "saude_geral")
+        self.assertEqual(geral["metricas"]["alertas"], 1)
+        self.assertEqual(geral["status"], hds.STATUS_AVISO)
+
+
 if __name__ == "__main__":
     unittest.main()

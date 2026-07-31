@@ -252,7 +252,7 @@ def checar_postgres(db: Optional[Session] = None) -> dict[str, Any]:
             "postgres",
             "PostgreSQL",
             st,
-            f"OK — conectado em {ms} ms",
+            f"conectado em {ms} ms",
             "\n".join(linhas),
             grupo=GRUPO_APLICACAO,
             metricas=metricas,
@@ -1290,11 +1290,75 @@ def checar_containers(_db: Optional[Session] = None) -> dict[str, Any]:
     return item
 
 
-def _unit_exists(name: str) -> bool:
-    rc, out, _ = _run_cmd(["systemctl", "show", name, "--property=LoadState", "--no-page"], timeout=TIMEOUT_LEVE_S)
-    if rc != 0:
-        return False
-    return "LoadState=loaded" in out or "LoadState=masked" in out
+def _parse_systemctl_show(out: str) -> dict[str, str]:
+    props: dict[str, str] = {}
+    for line in (out or "").splitlines():
+        if "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        props[k.strip()] = v.strip()
+    return props
+
+
+def _unit_show(name: str) -> Optional[dict[str, str]]:
+    rc, out, _ = _run_cmd(
+        [
+            "systemctl",
+            "show",
+            name,
+            "--property=LoadState,ActiveState,UnitFileState,FragmentPath,Id",
+            "--no-pager",
+        ],
+        timeout=TIMEOUT_LEVE_S,
+    )
+    if rc != 0 and not out.strip():
+        return None
+    props = _parse_systemctl_show(out)
+    if not props:
+        return None
+    if props.get("LoadState") in {"not-found", ""}:
+        return None
+    return props
+
+
+def _normalizar_unit(nome: str) -> str:
+    n = str(nome or "").strip()
+    if not n:
+        return ""
+    if not n.endswith(".service") and "@" not in n and not n.endswith(".socket"):
+        n = n + ".service"
+    return n
+
+
+def _unit_eh_opcional(unit: str) -> bool:
+    u = unit.lower()
+    if u.startswith("wg-quick@"):
+        return True
+    if u in {"podman.service", "docker.service", "onix-homolog.service"}:
+        return True
+    return False
+
+
+def _unit_deve_listar(unit: str, props: dict[str, str]) -> bool:
+    """Evita falso positivo de templates systemd (ex.: wg-quick@qualquer) e services disabled/idle."""
+    active = (props.get("ActiveState") or "").lower()
+    file_state = (props.get("UnitFileState") or "").lower()
+    if active in {"active", "activating", "reloading", "failed"}:
+        return True
+    if file_state in {"enabled", "enabled-runtime", "linked", "linked-runtime"}:
+        return True
+    # Essenciais concretos (nao-template): listar mesmo se disabled, para avisar se pararam.
+    if not _unit_eh_opcional(unit) and "@" not in unit:
+        load = (props.get("LoadState") or "").lower()
+        return load in {"loaded", "masked"}
+    return False
+
+
+def _wg_interfaces() -> list[str]:
+    rc, out, _ = _run_cmd(["wg", "show", "interfaces"], timeout=TIMEOUT_LEVE_S)
+    if rc != 0 or not out.strip():
+        return []
+    return [x.strip() for x in out.split() if x.strip()]
 
 
 def checar_servicos(_db: Optional[Session] = None) -> dict[str, Any]:
@@ -1309,25 +1373,36 @@ def checar_servicos(_db: Optional[Session] = None) -> dict[str, Any]:
         "nginx.service",
         "podman.service",
         "docker.service",
-        "wg-quick@onix-rede.service",
     ):
-        n = str(nome or "").strip()
+        n = _normalizar_unit(nome)
         if n and n not in candidatos:
-            if not n.endswith(".service") and "@" not in n:
-                n = n + ".service"
+            candidatos.append(n)
+
+    # WireGuard: so instancias reais (iface UP ou unit habilitada), nunca inventar onix-rede.
+    for iface in _wg_interfaces():
+        n = _normalizar_unit(f"wg-quick@{iface}")
+        if n and n not in candidatos:
             candidatos.append(n)
 
     encontrados: list[dict[str, str]] = []
     for unit in candidatos:
-        if not _unit_exists(unit):
+        props = _unit_show(unit)
+        if not props or not _unit_deve_listar(unit, props):
             continue
-        rc, out, _ = _run_cmd(["systemctl", "is-active", unit], timeout=TIMEOUT_LEVE_S)
-        estado = (out.strip() or "unknown")
-        rc2, out2, _ = _run_cmd(["systemctl", "is-failed", unit], timeout=TIMEOUT_LEVE_S)
-        failed = (out2.strip() == "failed")
-        if failed:
+        estado = (props.get("ActiveState") or "unknown").strip() or "unknown"
+        if estado == "failed" or (props.get("UnitFileState") or "").lower() == "bad":
             estado = "failed"
-        encontrados.append({"nome": unit, "estado": estado})
+        # is-failed e mais confiavel para residual failed
+        _rc_f, out_f, _ = _run_cmd(["systemctl", "is-failed", unit], timeout=TIMEOUT_LEVE_S)
+        if (out_f or "").strip() == "failed":
+            estado = "failed"
+        encontrados.append(
+            {
+                "nome": unit,
+                "estado": estado,
+                "opcional": "1" if _unit_eh_opcional(unit) else "0",
+            }
+        )
 
     if not encontrados:
         return _item(
@@ -1335,17 +1410,21 @@ def checar_servicos(_db: Optional[Session] = None) -> dict[str, Any]:
             "Servicos essenciais",
             STATUS_INFO,
             "Nenhum servico conhecido detectado",
-            "Allowlist nao encontrou units systemd conhecidos.",
+            "Allowlist nao encontrou units systemd relevantes.",
             grupo=GRUPO_VISAO,
         )
 
     ativos = sum(1 for x in encontrados if x["estado"] == "active")
     falha = sum(1 for x in encontrados if x["estado"] == "failed")
-    inativos = len(encontrados) - ativos - falha
+    # Inativos so contam alerta se nao forem opcionais (podman/wg idle e esperado).
+    inativos_alerta = [
+        x for x in encontrados if x["estado"] not in {"active", "failed"} and x.get("opcional") != "1"
+    ]
+    inativos = len([x for x in encontrados if x["estado"] not in {"active", "failed"}])
     st = STATUS_OK
     if falha:
         st = STATUS_ERRO
-    elif inativos:
+    elif inativos_alerta:
         st = STATUS_AVISO
     linhas = [f"{x['nome']}: {x['estado']}" for x in encontrados]
     return _item(
@@ -1355,7 +1434,13 @@ def checar_servicos(_db: Optional[Session] = None) -> dict[str, Any]:
         f"{ativos} ativos · {inativos} inativos · {falha} com falha · total {len(encontrados)}",
         "\n".join(linhas),
         grupo=GRUPO_VISAO,
-        metricas={"ativos": ativos, "inativos": inativos, "falha": falha, "total": len(encontrados), "lista": encontrados},
+        metricas={
+            "ativos": ativos,
+            "inativos": inativos,
+            "falha": falha,
+            "total": len(encontrados),
+            "lista": encontrados,
+        },
     )
 
 
@@ -1574,11 +1659,12 @@ def coletar_health_dashboard(db: Optional[Session] = None, *, refresh: bool = Fa
     geral = checar_saude_geral(itens_base)
     itens = [geral] + itens_base
 
-    alertas = sum(1 for i in itens if i.get("status") in {STATUS_AVISO, STATUS_RISCO, STATUS_ERRO})
-    erros = sum(1 for i in itens if i.get("status") == STATUS_ERRO)
-    avisos = sum(1 for i in itens if i.get("status") in {STATUS_AVISO, STATUS_RISCO})
-    normais = sum(1 for i in itens if i.get("status") == STATUS_OK)
-    indisponiveis = sum(1 for i in itens if i.get("status") == STATUS_INFO)
+    # Contagem do banner/badge: so itens reais (exclui o card agregado saude_geral).
+    erros = sum(1 for i in itens_base if i.get("status") == STATUS_ERRO)
+    avisos = sum(1 for i in itens_base if i.get("status") in {STATUS_AVISO, STATUS_RISCO})
+    normais = sum(1 for i in itens_base if i.get("status") == STATUS_OK)
+    indisponiveis = sum(1 for i in itens_base if i.get("status") == STATUS_INFO)
+    alertas = avisos + erros
     ok = erros == 0 and avisos == 0
 
     payload = {
