@@ -1896,6 +1896,328 @@ def app_demo():
     .modal-box.modal-box--finance {
       width: min(940px, 96vw);
     }
+    #modalHealthDashboard .modal-box {
+      width: min(980px, 96vw);
+      max-height: 92vh;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      margin-bottom: 8px; flex-shrink: 0;
+    }
+    #modalHealthDashboard .health-dash-body { overflow: hidden !important; max-height: none !important; }
+    /* HEALTH_DASH_CHARTS_V3_BEGIN */
+    #modalHealthDashboard.modal-overlay {
+      align-items: center !important;
+      justify-content: center !important;
+      padding: .8vh .8vw !important;
+      background: rgba(0, 0, 0, .75) !important;
+    }
+    #modalHealthDashboard .modal-box,
+    #modalHealthDashboard .modal-box.modal-box--finance {
+      width: min(1540px, 98vw) !important;
+      height: min(96vh, 1100px) !important;
+      max-height: min(96vh, 1100px) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      border-radius: 8px !important;
+      border: 1px solid #222 !important;
+      background: #000 !important;
+      color: #d0d0d0 !important;
+      box-shadow: 0 24px 80px rgba(0,0,0,.7) !important;
+      padding: 8px 10px 6px !important;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin: 0 0 6px !important;
+      flex-shrink: 0 !important;
+      padding-bottom: 6px !important;
+      border-bottom: 1px solid #1a1a1a !important;
+    }
+    #modalHealthDashboard .health-dash-header > div:first-child {
+      font-size: 15px !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+    }
+    #modalHealthDashboard .health-dash-header button {
+      background: #111 !important;
+      color: #ddd !important;
+      border: 1px solid #333 !important;
+    }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto !important;
+      max-height: none !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      display: block !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #444 #000 !important;
+    }
+    #modalHealthDashboard .health-dash-body > p.muted,
+    #modalHealthDashboard .health-dash-manutencao,
+    #modalHealthDashboard .health-dash-group-title,
+    #modalHealthDashboard .health-dash-bar,
+    #modalHealthDashboard .health-dash-bar-label,
+    #modalHealthDashboard .health-dash-summary {
+      display: none !important;
+    }
+    #modalHealthDashboard .health-dash-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      margin: 0 !important;
+    }
+    #modalHealthDashboard .gf-section {
+      border: 1px solid #222 !important;
+      background: #0a0a0a !important;
+    }
+    #modalHealthDashboard .gf-section-head {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      padding: 5px 8px !important;
+      background: #111 !important;
+      border-bottom: 1px solid #222 !important;
+      color: #bbb !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: .04em !important;
+    }
+    #modalHealthDashboard .gf-section-body { padding: 6px !important; }
+
+    /* Cluster row: left stats | center charts | right bars */
+    #modalHealthDashboard .gf-cluster {
+      display: grid !important;
+      grid-template-columns: 150px minmax(0, 1fr) 220px !important;
+      gap: 6px !important;
+      min-height: 220px !important;
+    }
+    #modalHealthDashboard .gf-stack {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-stat {
+      flex: 1 !important;
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 8px 10px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    #modalHealthDashboard .gf-stat-label {
+      font-size: 10px !important;
+      color: #888 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+    }
+    #modalHealthDashboard .gf-stat-value {
+      font-size: 26px !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+      line-height: 1.1 !important;
+      margin-top: 4px !important;
+    }
+    #modalHealthDashboard .gf-stat-value.is-ok { color: #7CFC00 !important; }
+    #modalHealthDashboard .gf-stat-value.is-aviso { color: #FFD700 !important; }
+    #modalHealthDashboard .gf-stat-value.is-erro { color: #FF4500 !important; }
+
+    #modalHealthDashboard .gf-charts4 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: 1fr 1fr !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-panel {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 4px 6px 2px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 100px !important;
+    }
+    #modalHealthDashboard .gf-panel-title {
+      font-size: 10px !important;
+      color: #999 !important;
+      font-weight: 700 !important;
+      margin-bottom: 2px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart {
+      flex: 1 !important;
+      min-height: 70px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart svg {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+    }
+
+    #modalHealthDashboard .gf-bars-panel {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 4px 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    #modalHealthDashboard .gf-bars-panel .gf-panel-chart { flex: 1 !important; }
+
+    /* Gauges grid like Datastore Status */
+    #modalHealthDashboard .gf-gauges {
+      display: grid !important;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-gauge {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 6px 4px 4px !important;
+      text-align: center !important;
+      min-height: 118px !important;
+      position: relative !important;
+    }
+    #modalHealthDashboard .gf-gauge.is-na {
+      outline: 1px solid #7f1d1d !important;
+    }
+    #modalHealthDashboard .gf-gauge-alert {
+      position: absolute !important;
+      top: 4px !important;
+      left: 6px !important;
+      color: #ef4444 !important;
+      font-weight: 900 !important;
+      font-size: 14px !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart {
+      height: 72px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart svg {
+      width: 108px !important;
+      height: 68px !important;
+    }
+    #modalHealthDashboard .gf-gauge-name {
+      font-size: 10px !important;
+      color: #aaa !important;
+      font-weight: 700 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      margin-top: 1px !important;
+    }
+
+    /* Bottom hypervisor-like charts */
+    #modalHealthDashboard .gf-bottom {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-bottom .gf-panel { min-height: 150px !important; }
+    #modalHealthDashboard .gf-legend {
+      display: flex !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
+      font-size: 9px !important;
+      color: #777 !important;
+      margin-top: 2px !important;
+    }
+
+    #modalHealthDashboard .gf-banner {
+      display: none !important;
+    }
+    #modalHealthDashboard #statusModalHealthDashboard {
+      color: #666 !important;
+      font-size: 10px !important;
+      margin-top: 2px !important;
+    }
+
+    @media (max-width: 1200px) {
+      #modalHealthDashboard .gf-cluster {
+        grid-template-columns: 1fr !important;
+      }
+      #modalHealthDashboard .gf-stack { flex-direction: row !important; }
+      #modalHealthDashboard .gf-gauges { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+      #modalHealthDashboard .gf-bottom { grid-template-columns: 1fr 1fr !important; }
+    }
+    @media (max-width: 700px) {
+      #modalHealthDashboard .gf-gauges,
+      #modalHealthDashboard .gf-bottom,
+      #modalHealthDashboard .gf-charts4 {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    /* HEALTH_DASH_CHARTS_V3_END */
+#modalHealthDashboard .health-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    #modalHealthDashboard .health-dash-group-title {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+      margin: 12px 0 0;
+      padding-top: 6px;
+      border-top: 1px solid #e2e8f0;
+    }
+    #modalHealthDashboard .health-dash-group-title:first-child {
+      border-top: none; margin-top: 0; padding-top: 0;
+    }
+    #modalHealthDashboard .health-dash-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #16a34a; }
+    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706; background: #fffbeb; }
+    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c; background: #fff7ed; }
+    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626; background: #fef2f2; }
+    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #94a3b8; background: #f8fafc; }
+    #modalHealthDashboard .health-dash-item-title {
+      font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 4px;
+    }
+    #modalHealthDashboard .health-dash-item-resumo {
+      font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;
+    }
+    #modalHealthDashboard .health-dash-item-detalhe {
+      font-size: 11px; color: #64748b; line-height: 1.45; white-space: pre-line;
+    }
+    #modalHealthDashboard .health-dash-bar {
+      margin-top: 8px; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;
+    }
+    #modalHealthDashboard .health-dash-bar > span {
+      display: block; height: 100%; background: #16a34a; border-radius: 999px;
+    }
+    #modalHealthDashboard .health-dash-bar.is-aviso > span { background: #d97706; }
+    #modalHealthDashboard .health-dash-bar.is-risco > span { background: #ea580c; }
+    #modalHealthDashboard .health-dash-bar.is-erro > span { background: #dc2626; }
+    #modalHealthDashboard .health-dash-bar-label {
+      font-size: 10px; color: #64748b; margin-top: 4px;
+    }
+    #modalHealthDashboard .health-dash-summary {
+      font-size: 12px; padding: 10px 12px; border-radius: 8px; margin-top: 4px;
+      border: 1px solid #e2e8f0; background: #f8fafc;
+    }
+    #modalHealthDashboard .health-dash-summary--ok { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
+    #modalHealthDashboard .health-dash-summary--warn { border-color: #fed7aa; background: #fff7ed; color: #9a3412; }
+    #modalHealthDashboard .health-dash-summary--erro { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+    #modalHealthDashboard .health-dash-manutencao {
+      margin-top: 12px; padding: 10px 12px; border: 1px dashed #cbd5e1; border-radius: 8px;
+      background: #f8fafc; color: #64748b; font-size: 12px; line-height: 1.45;
+    }
+    #modalHealthDashboard .health-dash-manutencao button[disabled] {
+      opacity: .55; cursor: not-allowed; margin-top: 8px;
+    }
+    @media (max-width: 640px) {
+      #modalHealthDashboard .health-dash-grid { grid-template-columns: 1fr; }
+    }
     .modal-box.modal-box--pedido-venda {
       width: min(1090px, 98vw);
       max-height: calc(92vh - 10px);
@@ -2888,6 +3210,7 @@ def app_demo():
         <div id="homeCfgAtualizacoes" data-aba="atualizacoes" class="tab-btn card-plano" role="button" tabindex="0">Atualizacoes do Sistema</div>
         <div id="homeCfgEvento" data-aba="evento" class="tab-btn card-produtos" role="button" tabindex="0">Configurar Evento</div>
         <div id="homeCfgBackup" data-aba="backup" class="tab-btn card-condpag" role="button" tabindex="0">Fazer Backup</div>
+        <div id="homeCfgHealth" data-aba="healthDash" class="tab-btn card-geral" role="button" tabindex="0">Saude do sistema</div>
         <div id="homeCfgRestore" data-aba="restore" class="tab-btn card-grupo" role="button" tabindex="0">Restaurar Backup</div>
       </div>
       <input id="restoreFileInputHome" type="file" accept=".db" class="hidden" onchange="restaurarBackup(this)" />
@@ -4339,6 +4662,29 @@ def app_demo():
     </div>
   </div>
 
+  <div id="modalHealthDashboard" class="modal-overlay hidden">
+    <div class="modal-box modal-box--finance">
+      <div class="health-dash-header">
+        <div style="font-weight:bold;">Saude do sistema</div>
+        <div style="display:flex; gap:8px;">
+          <button class="alt" type="button" onclick="void carregarHealthDashboard(true)">Atualizar</button>
+          <button class="alt" type="button" onclick="fecharModalHealthDashboard()">Fechar</button>
+        </div>
+      </div>
+      <div class="health-dash-body">
+        <p class="muted" style="font-size:12px;line-height:1.45;margin:0;">Diagnostico somente leitura do servidor e integracoes. Nao altera configuracoes nem reinicia servicos.</p>
+        <div id="healthDashResumo" class="health-dash-summary">Carregando...</div>
+        <div id="healthDashGrid" class="health-dash-grid"></div>
+        <div class="health-dash-manutencao" id="healthDashManutencao">
+          <strong>Manutencao assistida</strong>
+          <div>Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.</div>
+          <button type="button" disabled>Executar manutencao (em breve)</button>
+        </div>
+        <div id="statusModalHealthDashboard" class="status-line muted" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="modalCompraEstoque" class="modal-overlay hidden">
     <div class="modal-box modal-box--finance" style="width:min(980px,96vw);">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
@@ -5563,6 +5909,10 @@ def app_demo():
         fazerBackup();
         return;
       }
+      if (acao === 'healthDash') {
+        void abrirModalHealthDashboard();
+        return;
+      }
       if (acao === 'restore') {
         var fileEl = document.getElementById('restoreFileInputHome');
         if (fileEl) fileEl.click();
@@ -5591,6 +5941,377 @@ def app_demo():
       const modal = document.getElementById('modalConfigBanco');
       if (modal) modal.classList.add('hidden');
       setMsg('statusModalConfigBanco', '');
+    }
+
+    function healthDashStatusLabel(st) {
+      var s = String(st || '').toLowerCase();
+      if (s === 'ok') return 'OK';
+      if (s === 'aviso') return 'Atencao';
+      if (s === 'risco') return 'Risco';
+      if (s === 'erro') return 'Problema';
+      return 'Info';
+    }
+
+    function healthDashGrupoTitulo(grupo) {
+      var g = String(grupo || '').toLowerCase();
+      if (g === 'visao') return 'Visao geral';
+      if (g === 'recursos') return 'Recursos do servidor';
+      if (g === 'aplicacao') return 'Aplicacao e integracoes';
+      if (g === 'rede') return 'Rede e servicos';
+      if (g === 'armazenamento') return 'Armazenamento e backups';
+      if (g === 'seguranca') return 'Seguranca e certificados';
+      return 'Outros';
+    }
+
+    function healthDashApiHeaders() {
+      var h = {};
+      try {
+        if (usuarioSessaoAtivaId) h['X-Onix-Usuario-Id'] = String(usuarioSessaoAtivaId);
+      } catch (e) {}
+      return h;
+    }
+
+    /* HEALTH_DASH_CHARTS_V3_JS_BEGIN */
+    function healthDashEsc(text) {
+      return String(text == null ? '' : text)
+        .split('&').join('&amp;')
+        .split('<').join('&lt;')
+        .split('>').join('&gt;')
+        .split('"').join('&quot;');
+    }
+
+    function healthDashById(itens) {
+      var map = {};
+      (itens || []).forEach(function(it) { map[String(it.id || '')] = it; });
+      return map;
+    }
+
+    function healthDashPctColor(pct) {
+      var p = Number(pct);
+      if (!isFinite(p)) return '#444';
+      if (p >= 90) return '#FF4500';
+      if (p >= 80) return '#FF8C00';
+      if (p >= 70) return '#FFD700';
+      return '#7CFC00';
+    }
+
+    function healthDashFormatUptime(seconds) {
+      var s = Math.max(0, Number(seconds) || 0);
+      var d = Math.floor(s / 86400);
+      var h = Math.floor((s % 86400) / 3600);
+      if (d >= 7) {
+        var weeks = (d / 7).toFixed(1);
+        if (weeks.slice(-2) === '.0') weeks = weeks.slice(0, -2);
+        return weeks + ' week';
+      }
+      if (d >= 1) return d + 'd ' + h + 'h';
+      var m = Math.floor((s % 3600) / 60);
+      if (h >= 1) return h + 'h ' + m + 'm';
+      return m + 'm';
+    }
+
+    function healthDashFormatBytes(n, digits) {
+      var v = Number(n);
+      if (!isFinite(v) || v < 0) return '-';
+      var u = ['B', 'KB', 'MB', 'GB', 'TB'];
+      var i = 0;
+      while (v >= 1024 && i < u.length - 1) { v /= 1024; i += 1; }
+      var d = digits == null ? 2 : digits;
+      return (i === 0 ? String(Math.round(v)) : v.toFixed(d)) + ' ' + u[i];
+    }
+
+    function healthDashHistoryPush(snapshot) {
+      var key = 'onixHealthDashHistoryV2';
+      var list = [];
+      try { list = JSON.parse(sessionStorage.getItem(key) || '[]') || []; } catch (eHist) { list = []; }
+      if (!Array.isArray(list)) list = [];
+      list.push(snapshot);
+      if (list.length > 48) list = list.slice(list.length - 48);
+      try { sessionStorage.setItem(key, JSON.stringify(list)); } catch (eSet) {}
+      return list;
+    }
+
+    function healthDashSeries(list, field) {
+      return (list || []).map(function(h) { return h[field]; }).filter(function(v) { return v != null && isFinite(Number(v)); }).map(Number);
+    }
+
+    function healthDashSparkSvg(points, color) {
+      var vals = (points || []).slice();
+      var w = 360, h = 90, pad = 4;
+      if (vals.length < 2) vals = vals.length ? [vals[0], vals[0]] : [0, 0];
+      var min = Math.min.apply(null, vals);
+      var max = Math.max.apply(null, vals);
+      if (max === min) max = min + 1;
+      var path = '';
+      vals.forEach(function(v, idx) {
+        var x = pad + (idx / (vals.length - 1)) * (w - pad * 2);
+        var y = h - pad - ((v - min) / (max - min)) * (h - pad * 2);
+        path += (idx ? ' L ' : 'M ') + x.toFixed(1) + ' ' + y.toFixed(1);
+      });
+      var last = vals[vals.length - 1];
+      var area = path + ' L ' + (w - pad) + ' ' + (h - pad) + ' L ' + pad + ' ' + (h - pad) + ' Z';
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+        '<path d="' + area + '" fill="' + color + '" opacity="0.12"></path>' +
+        '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2"></path>' +
+        '<text x="' + (w - 6) + '" y="12" text-anchor="end" fill="#ddd" font-size="11" font-weight="700">' +
+        healthDashEsc(isFinite(last) ? (Math.round(last * 10) / 10) : '-') + '</text></svg>';
+    }
+
+    function healthDashGaugeSvg(pct, color, centerText) {
+      var p = Math.max(0, Math.min(100, Number(pct) || 0));
+      var cx = 54, cy = 50, r = 38;
+      function polar(ang) { return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) }; }
+      var start = Math.PI;
+      var end = Math.PI - (Math.PI * (p / 100));
+      var p0 = polar(start);
+      var p1 = polar(end);
+      var t1 = polar(0);
+      var track = 'M ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) + ' A ' + r + ' ' + r + ' 0 0 1 ' + t1.x.toFixed(2) + ' ' + t1.y.toFixed(2);
+      var value = 'M ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) + ' A ' + r + ' ' + r + ' 0 0 1 ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2);
+      var label = centerText != null ? String(centerText) : (Math.round(p * 10) / 10) + '%';
+      return '<svg viewBox="0 0 108 68" aria-hidden="true">' +
+        '<path d="' + track + '" fill="none" stroke="#222" stroke-width="9" stroke-linecap="round"></path>' +
+        '<path d="' + value + '" fill="none" stroke="' + color + '" stroke-width="9" stroke-linecap="round"></path>' +
+        '<text x="' + cx + '" y="56" text-anchor="middle" fill="#fff" font-size="15" font-weight="800">' +
+        healthDashEsc(label) + '</text></svg>';
+    }
+
+    function healthDashBarsSvg(items) {
+      var list = (items || []).slice(0, 8);
+      var w = 200, h = 200, padTop = 10, padBottom = 28, padX = 10;
+      var chartH = h - padTop - padBottom;
+      var n = Math.max(1, list.length);
+      var bw = Math.max(10, ((w - padX * 2) / n) - 6);
+      var html = '<svg viewBox="0 0 ' + w + ' ' + h + '" aria-hidden="true">';
+      var colors = ['#7CFC00', '#FFD700', '#1E90FF', '#FF8C00', '#DA70D6', '#00CED1', '#FF6347', '#ADFF2F'];
+      list.forEach(function(it, idx) {
+        var pct = Math.max(0, Math.min(100, Number(it.pct) || 0));
+        var barH = (pct / 100) * chartH;
+        var x = padX + idx * ((w - padX * 2) / n) + 3;
+        var y = padTop + (chartH - barH);
+        html += '<rect x="' + x.toFixed(1) + '" y="' + padTop + '" width="' + bw.toFixed(1) + '" height="' + chartH + '" fill="#151515"></rect>';
+        html += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(2, barH).toFixed(1) + '" fill="' + (it.color || colors[idx % colors.length]) + '"></rect>';
+        html += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (h - 8) + '" text-anchor="middle" fill="#888" font-size="8">' + healthDashEsc((it.name || '').slice(0, 6)) + '</text>';
+      });
+      html += '</svg>';
+      return html;
+    }
+
+    function healthDashSection(title, bodyHtml) {
+      return '<div class="gf-section"><div class="gf-section-head"><span>' + healthDashEsc(title) +
+        '</span><span>v</span></div><div class="gf-section-body">' + bodyHtml + '</div></div>';
+    }
+
+    function healthDashGaugeCard(name, pct, opts) {
+      opts = opts || {};
+      var na = !!opts.na || !isFinite(Number(pct));
+      var val = na ? 0 : Number(pct);
+      var color = na ? '#333' : healthDashPctColor(val);
+      var center = na ? 'N/A' : (opts.label != null ? opts.label : ((Math.round(val * 10) / 10) + '%'));
+      return '<div class="gf-gauge' + (na || opts.alert ? ' is-na' : '') + '">' +
+        ((na || opts.alert) ? '<div class="gf-gauge-alert">!</div>' : '') +
+        '<div class="gf-gauge-chart">' + healthDashGaugeSvg(val, color, center) + '</div>' +
+        '<div class="gf-gauge-name">' + healthDashEsc(name) + '</div></div>';
+    }
+
+    function renderHealthDashboard(data) {
+      var resumo = document.getElementById('healthDashResumo');
+      var grid = document.getElementById('healthDashGrid');
+      var man = document.getElementById('healthDashManutencao');
+      if (!resumo || !grid) return;
+      if (man) man.style.display = 'none';
+      resumo.className = 'gf-banner';
+      resumo.style.display = 'none';
+
+      var byId = healthDashById(Array.isArray(data && data.itens) ? data.itens : []);
+      var cpu = byId.cpu || {};
+      var mem = byId.memoria || {};
+      var disco = byId.disco || {};
+      var wg = byId.wireguard || {};
+      var pg = byId.postgres || {};
+      var cert = byId.certificado || {};
+      var smtp = byId.smtp || {};
+      var backup = byId.backup || {};
+      var nginx = byId.nginx || {};
+      var containers = byId.containers || {};
+      var whatsapp = byId.whatsapp || {};
+      var servicos = byId.servicos || {};
+      var armazenamento = byId.armazenamento || {};
+
+      var cpuPct = Number((cpu.metricas || {}).pct);
+      var ramPct = Number((mem.metricas || {}).pct);
+      var diskPct = Number((disco.metricas || {}).pior_pct);
+      var ramUsed = Number((mem.metricas || {}).usada);
+      var cores = Number((cpu.metricas || {}).cores) || 0;
+      // approx MHz display like Grafana sample (not exact host MHz)
+      var cpuMhz = isFinite(cpuPct) && cores ? Math.round((cpuPct / 100) * cores * 3200) : null;
+      var peers = Number((wg.metricas || {}).peers) || 0;
+      var peersAtivos = Number((wg.metricas || {}).peers_ativos) || 0;
+      var wgPct = peers ? (peersAtivos / peers) * 100 : 0;
+      var pgPct = Number((pg.metricas || {}).barra_pct);
+      var swapPct = Number((mem.metricas || {}).swap_pct);
+      var certDias = Number((cert.metricas || {}).dias_restantes);
+      var certPct = isFinite(certDias) ? Math.max(0, Math.min(100, (certDias / 365) * 100)) : null;
+      var backupAge = Number((backup.metricas || {}).idade_horas);
+      var backupFresh = isFinite(backupAge) ? Math.max(0, 100 - Math.min(100, (backupAge / 24) * 100)) : null;
+      var smtpMs = Number((smtp.metricas || {}).latencia_ms);
+      var smtpHealth = isFinite(smtpMs) ? Math.max(0, Math.min(100, 100 - (smtpMs / 1000) * 100)) : null;
+      var nginxUp = !!(nginx.metricas || {}).ativo;
+      var waOk = String(whatsapp.status || '').toLowerCase() === 'ok' || (!!(whatsapp.metricas || {}).envio_habilitado && !!(whatsapp.metricas || {}).worker_ativo);
+      var rx = Number((wg.metricas || {}).rx);
+      var tx = Number((wg.metricas || {}).tx);
+
+      var hist = healthDashHistoryPush({
+        t: Date.now(),
+        cpu: isFinite(cpuPct) ? cpuPct : null,
+        ram: isFinite(ramPct) ? ramPct : null,
+        disk: isFinite(diskPct) ? diskPct : null,
+        wg: isFinite(wgPct) ? wgPct : null,
+        pg: isFinite(pgPct) ? pgPct : null,
+        smtp: isFinite(smtpMs) ? smtpMs : null,
+        rx: isFinite(rx) ? rx : null,
+        tx: isFinite(tx) ? tx : null
+      });
+
+      // network MB/s from rx+tx deltas
+      var netSeries = [];
+      for (var i = 1; i < hist.length; i++) {
+        var dt = (Number(hist[i].t) - Number(hist[i - 1].t)) / 1000;
+        if (dt <= 0) continue;
+        var dBytes = (Number(hist[i].rx || 0) + Number(hist[i].tx || 0)) - (Number(hist[i - 1].rx || 0) + Number(hist[i - 1].tx || 0));
+        if (dBytes < 0) dBytes = 0;
+        netSeries.push((dBytes / dt) / (1024 * 1024));
+      }
+      if (!netSeries.length) netSeries = [0, 0];
+
+      var leftStats =
+        '<div class="gf-stack">' +
+          '<div class="gf-stat"><div class="gf-stat-label">Uptime</div><div class="gf-stat-value is-ok">' + healthDashEsc(healthDashFormatUptime((cpu.metricas || {}).uptime_segundos)) + '</div></div>' +
+          '<div class="gf-stat"><div class="gf-stat-label">CPU Usage</div><div class="gf-stat-value ' + (cpuPct >= 85 ? 'is-erro' : (cpuPct >= 70 ? 'is-aviso' : 'is-ok')) + '">' + healthDashEsc(cpuMhz != null ? (cpuMhz + ' MHz') : '-') + '</div></div>' +
+          '<div class="gf-stat"><div class="gf-stat-label">RAM Usage</div><div class="gf-stat-value ' + (ramPct >= 85 ? 'is-erro' : (ramPct >= 70 ? 'is-aviso' : 'is-ok')) + '">' + healthDashEsc(healthDashFormatBytes(ramUsed, 2)) + '</div></div>' +
+        '</div>';
+
+      var centerCharts =
+        '<div class="gf-charts4">' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster CPU</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'cpu'), '#7CFC00') + '</div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster RAM</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'ram'), '#7CFC00') + '</div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster Network Usage</div><div class="gf-panel-chart">' + healthDashSparkSvg(netSeries, '#FFD700') + '</div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster Storage / Disk</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'disk'), '#1E90FF') + '</div></div>' +
+        '</div>';
+
+      var barItems = [];
+      (((disco.metricas || {}).particoes) || []).forEach(function(p) {
+        var name = ((p.rotulos || p.paths || ['disk'])[0] || 'disk');
+        barItems.push({ name: String(name).replace('/mnt/', '').replace('/opt/', ''), pct: 100 - Number(p.pct || 0), color: healthDashPctColor(p.pct) });
+      });
+      (((armazenamento.metricas || {}).diretorios) || []).slice(0, 5).forEach(function(d, idx) {
+        // relative capacity bar using share of largest dir (visual only)
+        barItems.push({ name: String(d.nome || d.path || 'dir').slice(0, 8), pct: null, bytes: Number(d.bytes) || 0 });
+      });
+      // convert byte dirs to % of max for remaining slots
+      var maxBytes = 0;
+      barItems.forEach(function(b) { if (b.bytes != null) maxBytes = Math.max(maxBytes, b.bytes); });
+      barItems = barItems.map(function(b) {
+        if (b.pct == null && maxBytes > 0) {
+          return { name: b.name, pct: (b.bytes / maxBytes) * 100, color: '#1E90FF' };
+        }
+        return b;
+      }).slice(0, 8);
+
+      var rightBars =
+        '<div class="gf-bars-panel"><div class="gf-panel-title">Datastores - Usage Capacity</div>' +
+        '<div class="gf-panel-chart">' + healthDashBarsSvg(barItems) + '</div></div>';
+
+      var cluster = '<div class="gf-cluster">' + leftStats + centerCharts + rightBars + '</div>';
+
+      // Datastore-like gauges
+      var parts = ((disco.metricas || {}).particoes) || [];
+      function partPct(want) {
+        for (var i = 0; i < parts.length; i++) {
+          var paths = parts[i].paths || [];
+          var rotulos = parts[i].rotulos || [];
+          if (paths.indexOf(want) >= 0 || rotulos.indexOf(want) >= 0) return Number(parts[i].pct);
+          if (want === 'hd_A' && (paths.join(' ').indexOf('/mnt/hd_A') >= 0 || rotulos.join(' ').indexOf('hd_A') >= 0)) return Number(parts[i].pct);
+          if (want === 'hd_B' && (paths.join(' ').indexOf('/mnt/hd_B') >= 0 || rotulos.join(' ').indexOf('hd_B') >= 0)) return Number(parts[i].pct);
+        }
+        return null;
+      }
+      var gauges =
+        '<div class="gf-gauges">' +
+          healthDashGaugeCard('root /', partPct('/') != null ? partPct('/') : diskPct) +
+          healthDashGaugeCard('hd_A', partPct('hd_A')) +
+          healthDashGaugeCard('hd_B', partPct('hd_B')) +
+          healthDashGaugeCard('CPU', cpuPct) +
+          healthDashGaugeCard('RAM', ramPct) +
+          healthDashGaugeCard('Swap', swapPct) +
+          healthDashGaugeCard('PostgreSQL', pgPct) +
+          healthDashGaugeCard('WireGuard', wgPct, { label: peersAtivos + '/' + peers }) +
+          healthDashGaugeCard('Cert A1', certPct, { label: isFinite(certDias) ? (Math.round(certDias) + 'd') : undefined }) +
+          healthDashGaugeCard('Backup', backupFresh) +
+          healthDashGaugeCard('SMTP', smtpHealth, { label: isFinite(smtpMs) ? (Math.round(smtpMs) + 'ms') : undefined }) +
+          healthDashGaugeCard('Nginx', nginxUp ? 100 : 0, { label: nginxUp ? 'UP' : 'DOWN', alert: !nginxUp }) +
+          healthDashGaugeCard('WhatsApp', waOk ? 100 : 35, { label: waOk ? 'ON' : 'OFF', alert: !waOk }) +
+          healthDashGaugeCard('Containers', ((containers.metricas || {}).ativos != null) ? Math.min(100, (Number((containers.metricas || {}).ativos) || 0) * 50) : null, {
+            label: String((containers.metricas || {}).ativos != null ? (containers.metricas || {}).ativos : 'N/A'),
+            na: (containers.metricas || {}).ativos == null,
+            alert: (containers.metricas || {}).ativos == null
+          }) +
+        '</div>';
+
+      var bottom =
+        '<div class="gf-bottom">' +
+          '<div class="gf-panel"><div class="gf-panel-title">Hypervisor CPU</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'cpu'), '#FFD700') + '</div><div class="gf-legend"><span>current ' + healthDashEsc(isFinite(cpuPct) ? cpuPct + '%' : '-') + '</span><span>cores ' + healthDashEsc(cores || '-') + '</span></div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Hypervisor Memory</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'ram'), '#7CFC00') + '</div><div class="gf-legend"><span>current ' + healthDashEsc(isFinite(ramPct) ? ramPct + '%' : '-') + '</span><span>used ' + healthDashEsc(healthDashFormatBytes(ramUsed, 2)) + '</span></div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Hypervisor Net Usage</div><div class="gf-panel-chart">' + healthDashSparkSvg(netSeries, '#FFD700') + '</div><div class="gf-legend"><span>RX ' + healthDashEsc(healthDashFormatBytes(rx, 1)) + '</span><span>TX ' + healthDashEsc(healthDashFormatBytes(tx, 1)) + '</span></div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Postgres / SMTP latency</div><div class="gf-panel-chart">' + healthDashSparkSvg(healthDashSeries(hist, 'smtp'), '#7CFC00') + '</div><div class="gf-legend"><span>pg ' + healthDashEsc((pg.metricas || {}).latencia_ms != null ? (pg.metricas || {}).latencia_ms + ' ms' : '-') + '</span><span>smtp ' + healthDashEsc(isFinite(smtpMs) ? smtpMs + ' ms' : '-') + '</span></div></div>' +
+        '</div>';
+
+      grid.innerHTML =
+        healthDashSection('Cluster Status', cluster) +
+        healthDashSection('Datastore Status', gauges) +
+        healthDashSection('Hypervisor Status', bottom);
+
+      if (typeof atualizarBadgeHealthDashboard === 'function') {
+        try { atualizarBadgeHealthDashboard(data); } catch (eBadge) {}
+      }
+    }
+    /* HEALTH_DASH_CHARTS_V3_JS_END */
+async function carregarHealthDashboard(forceRefresh) {
+      var resumo = document.getElementById('healthDashResumo');
+      var grid = document.getElementById('healthDashGrid');
+      if (resumo) {
+        resumo.className = 'health-dash-summary';
+        resumo.textContent = 'Carregando diagnostico...';
+      }
+      if (grid) grid.innerHTML = '';
+      setMsg('statusModalHealthDashboard', '');
+      try {
+        var q = forceRefresh ? '?refresh=1' : '';
+        var data = await api('/sistema/health-dashboard' + q, { headers: healthDashApiHeaders() });
+        renderHealthDashboard(data);
+      } catch (err) {
+        if (resumo) {
+          resumo.className = 'health-dash-summary health-dash-summary--erro';
+          resumo.textContent = 'Falha ao carregar diagnostico.';
+        }
+        setMsg('statusModalHealthDashboard', err.message, false);
+      }
+    }
+
+    async function abrirModalHealthDashboard() {
+      if (String(usuarioSessaoAtivaPerfil || '').toLowerCase() !== 'admin') {
+        setMsg('statusHomeConfig', 'Saude do sistema disponivel apenas para administradores.', false);
+        return;
+      }
+      var modal = document.getElementById('modalHealthDashboard');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      await carregarHealthDashboard(false);
+    }
+
+    function fecharModalHealthDashboard() {
+      var modal = document.getElementById('modalHealthDashboard');
+      if (modal) modal.classList.add('hidden');
     }
 
     function obterPayloadConfigBancoSistema() {
@@ -11740,7 +12461,16 @@ def app_demo():
               table { width: 100%; border-collapse: collapse; font-size: 12px; }
               th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
               th { background: #f4f4f4; }
-            </style>
+            
+    /* HEALTH_DASH_CHARTS_V3_TAIL */
+    #modalHealthDashboard .modal-box { overflow: hidden !important; }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto !important;
+      max-height: none !important;
+    }
+    #modalHealthDashboard .health-dash-grid { overflow: visible !important; }
+
+</style>
           </head>
           <body>
             <h2>${escapeHtmlRelatorio(relatorioMetaCache.titulo || 'Relatorio Financeiro')}</h2>
@@ -11899,6 +12629,7 @@ def app_demo():
         ['homeCfgAtualizacoes', 'atualizacoes'],
         ['homeCfgEvento', 'evento'],
         ['homeCfgBackup', 'backup'],
+        ['homeCfgHealth', 'healthDash'],
         ['homeCfgRestore', 'restore'],
       ];
       var i, par, el;

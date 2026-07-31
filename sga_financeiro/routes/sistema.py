@@ -14,9 +14,9 @@ import subprocess
 import urllib.request
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile, status
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy import create_engine as sa_create_engine
 from sqlalchemy.orm import Session
@@ -26,8 +26,81 @@ from sga_financeiro.config import settings
 from sga_financeiro.database import engine, get_db
 from sga_financeiro.local_config import load_local_config, local_config_path, montar_database_url, save_local_config
 from sga_financeiro.services.exclusao_historico_service import excluir_historicos_liquidados
+from sga_financeiro.services.health_dashboard_service import coletar_health_dashboard, limpar_cache_health
 
 router = APIRouter(prefix="/sistema", tags=["Sistema"])
+
+
+def _exigir_admin_health(request: Request) -> int:
+    """Somente perfil admin. Aceita auth_user_id da sessao ou header X-Onix-Usuario-Id."""
+    uid = getattr(getattr(request, "state", None), "auth_user_id", None)
+    if uid is None:
+        raw = request.headers.get("X-Onix-Usuario-Id") or request.headers.get("x-onix-usuario-id")
+        if raw and str(raw).strip().isdigit():
+            uid = int(str(raw).strip())
+    if not uid:
+        raise HTTPException(status_code=401, detail="Nao autenticado.")
+    with engine.connect() as conn:
+        row = conn.execute(
+            text("SELECT perfil FROM usuarios_sistema WHERE id = :id AND ativo = TRUE LIMIT 1"),
+            {"id": int(uid)},
+        ).mappings().first()
+    if not row or str(row.get("perfil") or "").lower() != "admin":
+        raise HTTPException(status_code=403, detail="Somente administradores podem acessar o diagnostico.")
+    return int(uid)
+
+
+class HealthDashboardItemOut(BaseModel):
+    id: str
+    nome: str
+    status: str
+    resumo: str
+    detalhe: str = ""
+    grupo: str = "aplicacao"
+    metricas: dict[str, Any] = Field(default_factory=dict)
+    coletado_em: str = ""
+    erro: str = ""
+
+
+class HealthDashboardResumoOut(BaseModel):
+    normais: int = 0
+    alertas: int = 0
+    erros: int = 0
+    indisponiveis: int = 0
+    mensagem: str = ""
+
+
+class HealthDashboardManutencaoOut(BaseModel):
+    habilitada: bool = False
+    mensagem: str = ""
+
+
+class HealthDashboardOut(BaseModel):
+    ok: bool
+    checked_at: str
+    alertas: int
+    itens: list[HealthDashboardItemOut]
+    resumo_geral: HealthDashboardResumoOut = Field(default_factory=HealthDashboardResumoOut)
+    manutencao: HealthDashboardManutencaoOut = Field(
+        default_factory=lambda: HealthDashboardManutencaoOut(
+            habilitada=False,
+            mensagem="Recursos de manutencao estarao disponiveis apos configuracao e validacao individual.",
+        )
+    )
+
+
+@router.get("/health-dashboard", response_model=HealthDashboardOut)
+def health_dashboard(
+    request: Request,
+    db: Session = Depends(get_db),
+    refresh: bool = Query(False, description="Ignora cache curto e refaz diagnosticos"),
+    _admin_id: int = Depends(_exigir_admin_health),
+) -> HealthDashboardOut:
+    """Diagnostico interno somente-leitura do servidor e integracoes."""
+    if refresh:
+        limpar_cache_health()
+    raw = coletar_health_dashboard(db, refresh=refresh)
+    return HealthDashboardOut(**raw)
 
 
 class ConfirmarExclusaoHistorico(BaseModel):

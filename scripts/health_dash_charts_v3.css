@@ -1,0 +1,246 @@
+/* HEALTH_DASH_CHARTS_V3_BEGIN */
+    #modalHealthDashboard.modal-overlay {
+      align-items: center !important;
+      justify-content: center !important;
+      padding: .8vh .8vw !important;
+      background: rgba(0, 0, 0, .75) !important;
+    }
+    #modalHealthDashboard .modal-box,
+    #modalHealthDashboard .modal-box.modal-box--finance {
+      width: min(1540px, 98vw) !important;
+      height: min(96vh, 1100px) !important;
+      max-height: min(96vh, 1100px) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      border-radius: 8px !important;
+      border: 1px solid #222 !important;
+      background: #000 !important;
+      color: #d0d0d0 !important;
+      box-shadow: 0 24px 80px rgba(0,0,0,.7) !important;
+      padding: 8px 10px 6px !important;
+    }
+    #modalHealthDashboard .health-dash-header {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin: 0 0 6px !important;
+      flex-shrink: 0 !important;
+      padding-bottom: 6px !important;
+      border-bottom: 1px solid #1a1a1a !important;
+    }
+    #modalHealthDashboard .health-dash-header > div:first-child {
+      font-size: 15px !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+    }
+    #modalHealthDashboard .health-dash-header button {
+      background: #111 !important;
+      color: #ddd !important;
+      border: 1px solid #333 !important;
+    }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto !important;
+      max-height: none !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      display: block !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #444 #000 !important;
+    }
+    #modalHealthDashboard .health-dash-body > p.muted,
+    #modalHealthDashboard .health-dash-manutencao,
+    #modalHealthDashboard .health-dash-group-title,
+    #modalHealthDashboard .health-dash-bar,
+    #modalHealthDashboard .health-dash-bar-label,
+    #modalHealthDashboard .health-dash-summary {
+      display: none !important;
+    }
+    #modalHealthDashboard .health-dash-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      margin: 0 !important;
+    }
+    #modalHealthDashboard .gf-section {
+      border: 1px solid #222 !important;
+      background: #0a0a0a !important;
+    }
+    #modalHealthDashboard .gf-section-head {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      padding: 5px 8px !important;
+      background: #111 !important;
+      border-bottom: 1px solid #222 !important;
+      color: #bbb !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: .04em !important;
+    }
+    #modalHealthDashboard .gf-section-body { padding: 6px !important; }
+
+    /* Cluster row: left stats | center charts | right bars */
+    #modalHealthDashboard .gf-cluster {
+      display: grid !important;
+      grid-template-columns: 150px minmax(0, 1fr) 220px !important;
+      gap: 6px !important;
+      min-height: 220px !important;
+    }
+    #modalHealthDashboard .gf-stack {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-stat {
+      flex: 1 !important;
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 8px 10px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+    }
+    #modalHealthDashboard .gf-stat-label {
+      font-size: 10px !important;
+      color: #888 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+    }
+    #modalHealthDashboard .gf-stat-value {
+      font-size: 26px !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+      line-height: 1.1 !important;
+      margin-top: 4px !important;
+    }
+    #modalHealthDashboard .gf-stat-value.is-ok { color: #7CFC00 !important; }
+    #modalHealthDashboard .gf-stat-value.is-aviso { color: #FFD700 !important; }
+    #modalHealthDashboard .gf-stat-value.is-erro { color: #FF4500 !important; }
+
+    #modalHealthDashboard .gf-charts4 {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: 1fr 1fr !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-panel {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 4px 6px 2px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 100px !important;
+    }
+    #modalHealthDashboard .gf-panel-title {
+      font-size: 10px !important;
+      color: #999 !important;
+      font-weight: 700 !important;
+      margin-bottom: 2px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart {
+      flex: 1 !important;
+      min-height: 70px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart svg {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+    }
+
+    #modalHealthDashboard .gf-bars-panel {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 4px 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    #modalHealthDashboard .gf-bars-panel .gf-panel-chart { flex: 1 !important; }
+
+    /* Gauges grid like Datastore Status */
+    #modalHealthDashboard .gf-gauges {
+      display: grid !important;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-gauge {
+      background: #000 !important;
+      border: 1px solid #1f1f1f !important;
+      padding: 6px 4px 4px !important;
+      text-align: center !important;
+      min-height: 118px !important;
+      position: relative !important;
+    }
+    #modalHealthDashboard .gf-gauge.is-na {
+      outline: 1px solid #7f1d1d !important;
+    }
+    #modalHealthDashboard .gf-gauge-alert {
+      position: absolute !important;
+      top: 4px !important;
+      left: 6px !important;
+      color: #ef4444 !important;
+      font-weight: 900 !important;
+      font-size: 14px !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart {
+      height: 72px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart svg {
+      width: 108px !important;
+      height: 68px !important;
+    }
+    #modalHealthDashboard .gf-gauge-name {
+      font-size: 10px !important;
+      color: #aaa !important;
+      font-weight: 700 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      margin-top: 1px !important;
+    }
+
+    /* Bottom hypervisor-like charts */
+    #modalHealthDashboard .gf-bottom {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    #modalHealthDashboard .gf-bottom .gf-panel { min-height: 150px !important; }
+    #modalHealthDashboard .gf-legend {
+      display: flex !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
+      font-size: 9px !important;
+      color: #777 !important;
+      margin-top: 2px !important;
+    }
+
+    #modalHealthDashboard .gf-banner {
+      display: none !important;
+    }
+    #modalHealthDashboard #statusModalHealthDashboard {
+      color: #666 !important;
+      font-size: 10px !important;
+      margin-top: 2px !important;
+    }
+
+    @media (max-width: 1200px) {
+      #modalHealthDashboard .gf-cluster {
+        grid-template-columns: 1fr !important;
+      }
+      #modalHealthDashboard .gf-stack { flex-direction: row !important; }
+      #modalHealthDashboard .gf-gauges { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+      #modalHealthDashboard .gf-bottom { grid-template-columns: 1fr 1fr !important; }
+    }
+    @media (max-width: 700px) {
+      #modalHealthDashboard .gf-gauges,
+      #modalHealthDashboard .gf-bottom,
+      #modalHealthDashboard .gf-charts4 {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+    /* HEALTH_DASH_CHARTS_V3_END */
