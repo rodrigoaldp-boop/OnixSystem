@@ -262,21 +262,28 @@ def patch_main_charts_v3(text: str) -> str:
             print("  + CSS charts v3 inserido")
 
     # Garante CSS final vencedor tambem ao final da folha (depois de regras antigas).
-    if "HEALTH_DASH_CHARTS_V3_TAIL" not in text:
-        tail = (
-            "\n    /* HEALTH_DASH_CHARTS_V3_TAIL */\n"
-            "    #modalHealthDashboard .health-dash-body,"
-            " #modalHealthDashboard .health-dash-grid,"
-            " #modalHealthDashboard .modal-box {\n"
-            "      overflow: hidden !important;\n"
-            "    }\n"
-            "    #modalHealthDashboard .health-dash-body { max-height: none !important; }\n"
+    tail = (
+        "\n    /* HEALTH_DASH_CHARTS_V3_TAIL */\n"
+        "    #modalHealthDashboard .modal-box { overflow: hidden !important; }\n"
+        "    #modalHealthDashboard .health-dash-body {\n"
+        "      overflow: auto !important;\n"
+        "      max-height: none !important;\n"
+        "    }\n"
+        "    #modalHealthDashboard .health-dash-grid { overflow: visible !important; }\n"
+    )
+    if "HEALTH_DASH_CHARTS_V3_TAIL" in text:
+        text = re.sub(
+            r"/\*\s*HEALTH_DASH_CHARTS_V3_TAIL\s*\*/[\s\S]*?(?=</style>|\Z)",
+            tail.lstrip() + "\n",
+            text,
+            count=1,
         )
-        # inserir antes do fechamento </style> mais proximo apos modal health, ou no ultimo </style>
+        print("  ~ CSS tail grafana atualizado")
+    else:
         style_close = text.rfind("</style>")
         if style_close > 0:
             text = text[:style_close] + tail + text[style_close:]
-            print("  + CSS tail anti-scroll inserido")
+            print("  + CSS tail anti-clip inserido")
 
     if "HEALTH_DASH_CHARTS_V3_JS_BEGIN" in text:
         text = re.sub(

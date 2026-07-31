@@ -1909,223 +1909,281 @@ def app_demo():
     #modalHealthDashboard.modal-overlay {
       align-items: center !important;
       justify-content: center !important;
-      padding: 1.5vh 1.5vw !important;
-      background: rgba(15, 23, 42, .52) !important;
+      padding: 1vh 1vw !important;
+      background: rgba(2, 6, 23, .72) !important;
     }
     #modalHealthDashboard .modal-box,
     #modalHealthDashboard .modal-box.modal-box--finance {
-      width: min(1380px, 96vw) !important;
-      height: min(92vh, 980px) !important;
-      max-height: min(92vh, 980px) !important;
+      width: min(1460px, 97vw) !important;
+      height: min(94vh, 1040px) !important;
+      max-height: min(94vh, 1040px) !important;
       display: flex !important;
       flex-direction: column !important;
       overflow: hidden !important;
-      border-radius: 16px !important;
-      border: 1px solid #dbe3ef !important;
-      background:
-        radial-gradient(1200px 420px at 12% -10%, rgba(13, 148, 136, .10), transparent 55%),
-        radial-gradient(900px 380px at 100% 0%, rgba(245, 158, 11, .08), transparent 50%),
-        #f8fafc !important;
-      box-shadow: 0 28px 64px rgba(15, 23, 42, .28) !important;
-      padding: 12px 14px 10px !important;
+      border-radius: 12px !important;
+      border: 1px solid #1f2937 !important;
+      background: #0b1220 !important;
+      color: #e5e7eb !important;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .55) !important;
+      padding: 10px 12px 8px !important;
     }
     #modalHealthDashboard .health-dash-header {
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
       gap: 10px !important;
-      margin: 0 0 6px !important;
+      margin: 0 0 8px !important;
       flex-shrink: 0 !important;
+      border-bottom: 1px solid #1f2937 !important;
+      padding-bottom: 8px !important;
     }
     #modalHealthDashboard .health-dash-header > div:first-child {
-      font-size: 17px !important;
+      font-size: 16px !important;
       font-weight: 800 !important;
-      color: #0f172a !important;
-      letter-spacing: -.02em !important;
+      color: #f8fafc !important;
+      letter-spacing: .01em !important;
+    }
+    #modalHealthDashboard .health-dash-header button {
+      background: #111827 !important;
+      color: #e5e7eb !important;
+      border: 1px solid #334155 !important;
     }
     #modalHealthDashboard .health-dash-body {
-      overflow: hidden !important;
+      overflow: auto !important;
       max-height: none !important;
       flex: 1 1 auto !important;
       min-height: 0 !important;
       display: flex !important;
       flex-direction: column !important;
-      gap: 6px !important;
-      padding-right: 0 !important;
+      gap: 8px !important;
+      padding-right: 2px !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #334155 #0b1220 !important;
     }
-    #modalHealthDashboard .health-dash-body > p.muted {
+    #modalHealthDashboard .health-dash-body > p.muted,
+    #modalHealthDashboard .health-dash-manutencao,
+    #modalHealthDashboard .health-dash-group-title,
+    #modalHealthDashboard .health-dash-bar,
+    #modalHealthDashboard .health-dash-bar-label {
       display: none !important;
     }
     #modalHealthDashboard .health-dash-summary {
-      flex-shrink: 0 !important;
-      font-size: 12px !important;
-      padding: 7px 12px !important;
-      border-radius: 10px !important;
-      margin: 0 !important;
-      border: 1px solid #e2e8f0 !important;
-      background: rgba(255,255,255,.88) !important;
-      font-weight: 700 !important;
-    }
-    #modalHealthDashboard .health-dash-summary--ok {
-      border-color: #99f6e4 !important;
-      background: #f0fdfa !important;
-      color: #0f766e !important;
-    }
-    #modalHealthDashboard .health-dash-summary--warn {
-      border-color: #fde68a !important;
-      background: #fffbeb !important;
-      color: #92400e !important;
-    }
-    #modalHealthDashboard .health-dash-summary--erro {
-      border-color: #fecaca !important;
-      background: #fef2f2 !important;
-      color: #991b1b !important;
-    }
-    #modalHealthDashboard .health-dash-grid {
-      display: grid !important;
-      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-      grid-auto-rows: 1fr !important;
-      gap: 7px !important;
-      flex: 1 1 auto !important;
-      min-height: 0 !important;
-      align-content: stretch !important;
-      margin: 0 !important;
-      overflow: hidden !important;
-    }
-    #modalHealthDashboard .health-dash-group-title {
       display: none !important;
     }
-    #modalHealthDashboard .health-dash-item {
-      display: grid !important;
-      grid-template-columns: 64px minmax(0, 1fr) !important;
-      gap: 8px !important;
+    #modalHealthDashboard .health-dash-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      margin: 0 !important;
+      overflow: visible !important;
+    }
+    #modalHealthDashboard .gf-section {
+      border: 1px solid #1f2937 !important;
+      border-radius: 10px !important;
+      background: #0f172a !important;
+      overflow: hidden !important;
+    }
+    #modalHealthDashboard .gf-section-head {
+      display: flex !important;
       align-items: center !important;
-      border: 1px solid #e2e8f0 !important;
-      border-radius: 12px !important;
-      padding: 8px 9px !important;
-      background: rgba(255,255,255,.94) !important;
-      min-height: 0 !important;
-      overflow: hidden !important;
-      box-shadow: 0 1px 0 rgba(15, 23, 42, .03) !important;
-    }
-    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #0d9488 !important; }
-    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706 !important; background: #fffdf7 !important; }
-    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c !important; background: #fff7ed !important; }
-    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626 !important; background: #fef2f2 !important; }
-    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #64748b !important; }
-    #modalHealthDashboard .health-dash-chart {
-      width: 64px !important;
-      height: 64px !important;
-      flex-shrink: 0 !important;
-    }
-    #modalHealthDashboard .health-dash-chart svg {
-      width: 64px !important;
-      height: 64px !important;
-      display: block !important;
-    }
-    #modalHealthDashboard .health-dash-item-main {
-      min-width: 0 !important;
-      overflow: hidden !important;
-    }
-    #modalHealthDashboard .health-dash-item-title {
+      justify-content: space-between !important;
+      gap: 8px !important;
+      padding: 7px 10px !important;
+      background: #111827 !important;
+      border-bottom: 1px solid #1f2937 !important;
+      color: #cbd5e1 !important;
       font-size: 12px !important;
       font-weight: 800 !important;
-      color: #0f172a !important;
-      margin: 0 0 2px !important;
-      line-height: 1.15 !important;
+      letter-spacing: .02em !important;
+      text-transform: uppercase !important;
+    }
+    #modalHealthDashboard .gf-section-body {
+      padding: 8px !important;
+    }
+    #modalHealthDashboard .gf-kpis {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      margin-bottom: 8px !important;
+    }
+    #modalHealthDashboard .gf-kpi {
+      background: #020617 !important;
+      border: 1px solid #1e293b !important;
+      border-radius: 8px !important;
+      padding: 10px 12px !important;
+      min-height: 78px !important;
+    }
+    #modalHealthDashboard .gf-kpi-label {
+      font-size: 10px !important;
+      color: #94a3b8 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      margin-bottom: 6px !important;
+    }
+    #modalHealthDashboard .gf-kpi-value {
+      font-size: 28px !important;
+      line-height: 1 !important;
+      font-weight: 800 !important;
+      color: #f8fafc !important;
+    }
+    #modalHealthDashboard .gf-kpi-value.is-ok { color: #22c55e !important; }
+    #modalHealthDashboard .gf-kpi-value.is-aviso { color: #f59e0b !important; }
+    #modalHealthDashboard .gf-kpi-value.is-risco,
+    #modalHealthDashboard .gf-kpi-value.is-erro { color: #ef4444 !important; }
+    #modalHealthDashboard .gf-kpi-sub {
+      margin-top: 6px !important;
+      font-size: 10px !important;
+      color: #64748b !important;
+    }
+    #modalHealthDashboard .gf-trends {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+    }
+    #modalHealthDashboard .gf-panel {
+      background: #020617 !important;
+      border: 1px solid #1e293b !important;
+      border-radius: 8px !important;
+      padding: 8px 10px 6px !important;
+      min-height: 140px !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    #modalHealthDashboard .gf-panel-title {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      color: #94a3b8 !important;
+      margin-bottom: 4px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart {
+      flex: 1 !important;
+      min-height: 90px !important;
+    }
+    #modalHealthDashboard .gf-panel-chart svg {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+    }
+    #modalHealthDashboard .gf-gauges {
+      display: grid !important;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+    }
+    #modalHealthDashboard .gf-gauge {
+      background: #020617 !important;
+      border: 1px solid #1e293b !important;
+      border-radius: 8px !important;
+      padding: 8px 6px 6px !important;
+      text-align: center !important;
+      min-height: 132px !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart {
+      height: 78px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    #modalHealthDashboard .gf-gauge-chart svg {
+      width: 110px !important;
+      height: 70px !important;
+    }
+    #modalHealthDashboard .gf-gauge-name {
+      font-size: 10px !important;
+      color: #94a3b8 !important;
+      font-weight: 700 !important;
+      margin-top: 2px !important;
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
     }
-    #modalHealthDashboard .health-dash-item-resumo {
+    #modalHealthDashboard .gf-gauge-sub {
+      font-size: 10px !important;
+      color: #64748b !important;
+      margin-top: 2px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    #modalHealthDashboard .gf-services {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+    }
+    #modalHealthDashboard .gf-svc {
+      background: #020617 !important;
+      border: 1px solid #1e293b !important;
+      border-left-width: 4px !important;
+      border-radius: 8px !important;
+      padding: 9px 10px !important;
+      min-height: 84px !important;
+    }
+    #modalHealthDashboard .gf-svc.is-ok { border-left-color: #22c55e !important; }
+    #modalHealthDashboard .gf-svc.is-aviso { border-left-color: #f59e0b !important; }
+    #modalHealthDashboard .gf-svc.is-risco,
+    #modalHealthDashboard .gf-svc.is-erro { border-left-color: #ef4444 !important; }
+    #modalHealthDashboard .gf-svc.is-info { border-left-color: #64748b !important; }
+    #modalHealthDashboard .gf-svc-title {
+      font-size: 12px !important;
+      font-weight: 800 !important;
+      color: #f1f5f9 !important;
+      margin-bottom: 3px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    #modalHealthDashboard .gf-svc-resumo {
       font-size: 11px !important;
-      font-weight: 700 !important;
-      color: #334155 !important;
-      margin: 0 0 2px !important;
-      line-height: 1.2 !important;
+      color: #cbd5e1 !important;
+      line-height: 1.3 !important;
       display: -webkit-box !important;
       -webkit-line-clamp: 2 !important;
       -webkit-box-orient: vertical !important;
       overflow: hidden !important;
     }
-    #modalHealthDashboard .health-dash-item-detalhe {
+    #modalHealthDashboard .gf-svc-meta {
+      margin-top: 6px !important;
       font-size: 10px !important;
       color: #64748b !important;
-      line-height: 1.25 !important;
-      white-space: normal !important;
-      margin: 0 !important;
-      display: -webkit-box !important;
-      -webkit-line-clamp: 1 !important;
-      -webkit-box-orient: vertical !important;
+      white-space: nowrap !important;
       overflow: hidden !important;
+      text-overflow: ellipsis !important;
     }
-    #modalHealthDashboard .health-dash-chip {
-      display: inline-block !important;
-      margin-top: 3px !important;
-      padding: 1px 6px !important;
-      border-radius: 999px !important;
-      font-size: 9px !important;
-      font-weight: 800 !important;
-      letter-spacing: .02em !important;
-      text-transform: uppercase !important;
-      background: #ecfeff !important;
-      color: #0f766e !important;
-      border: 1px solid #99f6e4 !important;
+    #modalHealthDashboard .gf-banner {
+      flex-shrink: 0 !important;
+      border: 1px solid #14532d !important;
+      background: rgba(20, 83, 45, .25) !important;
+      color: #86efac !important;
+      border-radius: 8px !important;
+      padding: 7px 10px !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
     }
-    #modalHealthDashboard .health-dash-chip.is-aviso {
-      background: #fffbeb !important;
-      color: #92400e !important;
-      border-color: #fde68a !important;
+    #modalHealthDashboard .gf-banner.is-warn {
+      border-color: #92400e !important;
+      background: rgba(146, 64, 14, .22) !important;
+      color: #fcd34d !important;
     }
-    #modalHealthDashboard .health-dash-chip.is-risco,
-    #modalHealthDashboard .health-dash-chip.is-erro {
-      background: #fef2f2 !important;
-      color: #991b1b !important;
-      border-color: #fecaca !important;
-    }
-    #modalHealthDashboard .health-dash-chip.is-info {
-      background: #f1f5f9 !important;
-      color: #475569 !important;
-      border-color: #cbd5e1 !important;
-    }
-    #modalHealthDashboard .health-dash-bar,
-    #modalHealthDashboard .health-dash-bar-label,
-    #modalHealthDashboard .health-dash-manutencao {
-      display: none !important;
+    #modalHealthDashboard .gf-banner.is-erro {
+      border-color: #7f1d1d !important;
+      background: rgba(127, 29, 29, .25) !important;
+      color: #fca5a5 !important;
     }
     #modalHealthDashboard #statusModalHealthDashboard {
-      flex-shrink: 0 !important;
-      margin-top: 2px !important;
+      color: #64748b !important;
       font-size: 11px !important;
-      max-height: 1.4em !important;
-      overflow: hidden !important;
+      margin-top: 2px !important;
     }
     @media (max-width: 1200px) {
-      #modalHealthDashboard .health-dash-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-      }
+      #modalHealthDashboard .gf-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      #modalHealthDashboard .gf-trends { grid-template-columns: 1fr !important; }
+      #modalHealthDashboard .gf-gauges { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+      #modalHealthDashboard .gf-services { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     }
-    @media (max-width: 900px) {
-      #modalHealthDashboard .modal-box,
-      #modalHealthDashboard .modal-box.modal-box--finance {
-        width: min(96vw, 980px) !important;
-        height: min(93vh, 980px) !important;
-        max-height: min(93vh, 980px) !important;
-      }
-      #modalHealthDashboard .health-dash-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      }
-      #modalHealthDashboard .health-dash-item-detalhe {
-        display: none !important;
-      }
-    }
-    @media (max-width: 640px) {
-      #modalHealthDashboard .health-dash-grid {
+    @media (max-width: 800px) {
+      #modalHealthDashboard .gf-kpis,
+      #modalHealthDashboard .gf-gauges,
+      #modalHealthDashboard .gf-services {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 6px !important;
-      }
-      #modalHealthDashboard .health-dash-chip {
-        display: none !important;
       }
     }
     /* HEALTH_DASH_CHARTS_V3_END */
@@ -5950,174 +6008,126 @@ def app_demo():
     }
 
     /* HEALTH_DASH_CHARTS_V3_JS_BEGIN */
-    function healthDashChartColor(st) {
+    function healthDashEsc(text) {
+      return String(text == null ? '' : text)
+        .split('&').join('&amp;')
+        .split('<').join('&lt;')
+        .split('>').join('&gt;')
+        .split('"').join('&quot;');
+    }
+
+    function healthDashById(itens) {
+      var map = {};
+      (itens || []).forEach(function(it) { map[String(it.id || '')] = it; });
+      return map;
+    }
+
+    function healthDashPctColor(pct) {
+      var p = Number(pct);
+      if (!isFinite(p)) return '#64748b';
+      if (p >= 90) return '#ef4444';
+      if (p >= 80) return '#f97316';
+      if (p >= 70) return '#f59e0b';
+      return '#22c55e';
+    }
+
+    function healthDashStatusTone(st) {
       var s = String(st || '').toLowerCase();
-      if (s === 'ok') return '#0d9488';
-      if (s === 'aviso') return '#d97706';
-      if (s === 'risco') return '#ea580c';
-      if (s === 'erro') return '#dc2626';
-      return '#64748b';
+      if (s === 'ok') return 'ok';
+      if (s === 'aviso') return 'aviso';
+      if (s === 'risco' || s === 'erro') return s;
+      return 'info';
     }
 
-    function healthDashPolar(cx, cy, r, ang) {
-      return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) };
-    }
-
-    function healthDashPieSvg(slices, centerText) {
-      var size = 64, cx = 32, cy = 32, r = 25, inner = 15;
-      var total = 0;
-      (slices || []).forEach(function(sl) { total += Math.max(0, Number(sl.v) || 0); });
-      var parts = '';
-      if (total <= 0) {
-        parts = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#e2e8f0"></circle>' +
-          '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
-      } else if (slices.length === 1 || (slices.filter(function(s){ return (Number(s.v)||0) > 0; }).length === 1)) {
-        var only = slices.filter(function(s){ return (Number(s.v)||0) > 0; })[0] || slices[0];
-        parts = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (only.color || '#0d9488') + '"></circle>' +
-          '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
-      } else {
-        var ang = -Math.PI / 2;
-        slices.forEach(function(sl) {
-          var v = Math.max(0, Number(sl.v) || 0);
-          if (v <= 0) return;
-          var delta = (v / total) * Math.PI * 2;
-          if (delta >= Math.PI * 2 - 0.0001) {
-            parts += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (sl.color || '#0d9488') + '"></circle>';
-            return;
-          }
-          var a0 = ang;
-          var a1 = ang + delta;
-          var p0 = healthDashPolar(cx, cy, r, a0);
-          var p1 = healthDashPolar(cx, cy, r, a1);
-          var large = delta > Math.PI ? 1 : 0;
-          parts += '<path d="M ' + cx + ' ' + cy +
-            ' L ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) +
-            ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2) +
-            ' Z" fill="' + (sl.color || '#0d9488') + '"></path>';
-          ang = a1;
-        });
-        parts += '<circle cx="' + cx + '" cy="' + cy + '" r="' + inner + '" fill="#fff"></circle>';
+    function healthDashFormatUptime(seconds) {
+      var s = Math.max(0, Number(seconds) || 0);
+      var d = Math.floor(s / 86400);
+      var h = Math.floor((s % 86400) / 3600);
+      if (d >= 7) {
+        var weeks = (d / 7).toFixed(1);
+        if (weeks.slice(-2) === '.0') weeks = weeks.slice(0, -2);
+        return weeks + 'w';
       }
-      var label = String(centerText == null ? '' : centerText);
-      var font = label.length > 4 ? 10 : 12;
-      parts += '<text x="' + cx + '" y="' + (cy + 1) + '" text-anchor="middle" dominant-baseline="middle" ' +
-        'font-size="' + font + '" font-weight="800" fill="#0f172a">' + label.replace(/</g, '&lt;') + '</text>';
-      return '<svg viewBox="0 0 ' + size + ' ' + size + '" aria-hidden="true">' + parts + '</svg>';
+      if (d >= 1) return d + 'd ' + h + 'h';
+      var m = Math.floor((s % 3600) / 60);
+      if (h >= 1) return h + 'h ' + m + 'm';
+      return m + 'm';
     }
 
-    function healthDashDonutPct(pct, color, centerText) {
-      var p = Math.max(0, Math.min(100, Number(pct) || 0));
-      var rest = Math.max(0.0001, 100 - p);
-      return healthDashPieSvg([
-        { v: p, color: color || '#0d9488' },
-        { v: rest, color: '#e2e8f0' }
-      ], centerText != null ? centerText : (Math.round(p) + '%'));
+    function healthDashFormatBytes(n) {
+      var v = Number(n);
+      if (!isFinite(v) || v < 0) return '-';
+      var u = ['B', 'KB', 'MB', 'GB', 'TB'];
+      var i = 0;
+      while (v >= 1024 && i < u.length - 1) { v /= 1024; i += 1; }
+      return (i === 0 ? String(Math.round(v)) : v.toFixed(1)) + ' ' + u[i];
     }
 
-    function healthDashMiniBars(rows) {
-      var list = (rows || []).slice(0, 4);
-      if (!list.length) return '';
-      var max = 0;
-      list.forEach(function(r) { max = Math.max(max, Number(r.v) || 0); });
-      if (max <= 0) max = 1;
-      var y = 6, h = 8, gap = 4, w = 64;
-      var parts = '';
-      list.forEach(function(r, idx) {
-        var val = Math.max(0, Number(r.v) || 0);
-        var bw = Math.max(2, (val / max) * (w - 4));
-        var yy = y + idx * (h + gap);
-        parts += '<rect x="2" y="' + yy + '" width="' + (w - 4) + '" height="' + h + '" rx="3" fill="#e2e8f0"></rect>';
-        parts += '<rect x="2" y="' + yy + '" width="' + bw.toFixed(1) + '" height="' + h + '" rx="3" fill="' + (r.color || '#0d9488') + '"></rect>';
+    function healthDashHistoryPush(snapshot) {
+      var key = 'onixHealthDashHistoryV1';
+      var list = [];
+      try { list = JSON.parse(sessionStorage.getItem(key) || '[]') || []; } catch (eHist) { list = []; }
+      if (!Array.isArray(list)) list = [];
+      list.push(snapshot);
+      if (list.length > 36) list = list.slice(list.length - 36);
+      try { sessionStorage.setItem(key, JSON.stringify(list)); } catch (eSet) {}
+      return list;
+    }
+
+    function healthDashSparkSvg(points, color) {
+      var vals = (points || []).map(function(p) { return Number(p); }).filter(function(v) { return isFinite(v); });
+      var w = 320, h = 100, pad = 6;
+      if (vals.length < 2) {
+        vals = vals.length ? [vals[0], vals[0]] : [0, 0];
+      }
+      var min = Math.min.apply(null, vals);
+      var max = Math.max.apply(null, vals);
+      if (max === min) { max = min + 1; }
+      var path = '';
+      vals.forEach(function(v, idx) {
+        var x = pad + (idx / (vals.length - 1)) * (w - pad * 2);
+        var y = h - pad - ((v - min) / (max - min)) * (h - pad * 2);
+        path += (idx ? ' L ' : 'M ') + x.toFixed(1) + ' ' + y.toFixed(1);
       });
-      var height = y + list.length * (h + gap);
-      return '<svg viewBox="0 0 ' + w + ' ' + height + '" aria-hidden="true">' + parts + '</svg>';
+      var last = vals[vals.length - 1];
+      var area = path + ' L ' + (w - pad) + ' ' + (h - pad) + ' L ' + pad + ' ' + (h - pad) + ' Z';
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+        '<path d="' + area + '" fill="' + color + '" opacity="0.14"></path>' +
+        '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2.2"></path>' +
+        '<text x="' + (w - 8) + '" y="16" text-anchor="end" fill="#e2e8f0" font-size="12" font-weight="700">' +
+        healthDashEsc(isFinite(last) ? (Math.round(last * 10) / 10) : '-') + '</text>' +
+        '</svg>';
     }
 
-    function healthDashChartForItem(item, st) {
-      var met = item.metricas || {};
-      var id = String(item.id || '');
-      var color = healthDashChartColor(st);
+    function healthDashGaugeSvg(pct, color) {
+      var p = Math.max(0, Math.min(100, Number(pct) || 0));
+      var cx = 55, cy = 52, r = 40;
+      function polar(ang) {
+        return { x: cx + r * Math.cos(ang), y: cy + r * Math.sin(ang) };
+      }
+      // semicircle from PI to 0 (left to right, upper arc)
+      var start = Math.PI;
+      var end = Math.PI - (Math.PI * (p / 100));
+      var p0 = polar(start);
+      var p1 = polar(end);
+      var large = (Math.PI * (p / 100)) > Math.PI ? 1 : 0;
+      // track full semicircle
+      var t1 = polar(0);
+      var track = 'M ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) +
+        ' A ' + r + ' ' + r + ' 0 0 1 ' + t1.x.toFixed(2) + ' ' + t1.y.toFixed(2);
+      var value = 'M ' + p0.x.toFixed(2) + ' ' + p0.y.toFixed(2) +
+        ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + p1.x.toFixed(2) + ' ' + p1.y.toFixed(2);
+      return '<svg viewBox="0 0 110 70" aria-hidden="true">' +
+        '<path d="' + track + '" fill="none" stroke="#1e293b" stroke-width="10" stroke-linecap="round"></path>' +
+        '<path d="' + value + '" fill="none" stroke="' + color + '" stroke-width="10" stroke-linecap="round"></path>' +
+        '<text x="' + cx + '" y="58" text-anchor="middle" fill="#f8fafc" font-size="16" font-weight="800">' +
+        healthDashEsc(Math.round(p) + '%') + '</text>' +
+        '</svg>';
+    }
 
-      if (id === 'saude_geral') {
-        var slices = [
-          { v: Number(met.normais) || 0, color: '#0d9488' },
-          { v: Number(met.alertas) || 0, color: '#d97706' },
-          { v: Number(met.erros) || 0, color: '#dc2626' },
-          { v: Number(met.indisponiveis) || 0, color: '#94a3b8' }
-        ];
-        var tot = slices.reduce(function(a, b) { return a + b.v; }, 0);
-        return healthDashPieSvg(slices, tot ? String(tot) : '-');
-      }
-      if (id === 'servicos') {
-        return healthDashPieSvg([
-          { v: Number(met.ativos) || 0, color: '#0d9488' },
-          { v: Number(met.inativos) || 0, color: '#f59e0b' },
-          { v: Number(met.falha) || 0, color: '#dc2626' }
-        ], String(Number(met.ativos) || 0));
-      }
-      if (id === 'wireguard') {
-        var peers = Number(met.peers) || 0;
-        var ativos = Number(met.peers_ativos) || 0;
-        var inativos = Math.max(0, peers - ativos);
-        var pctWg = peers ? Math.round((ativos / peers) * 100) : 0;
-        return healthDashPieSvg([
-          { v: ativos, color: '#0d9488' },
-          { v: inativos, color: '#e2e8f0' }
-        ], pctWg + '%');
-      }
-      if (id === 'containers') {
-        return healthDashPieSvg([
-          { v: Number(met.ativos) || 0, color: '#0d9488' },
-          { v: Number(met.parados) || 0, color: '#f59e0b' },
-          { v: Math.max(0, (Number(met.imagens) || 0) - (Number(met.ativos) || 0)), color: '#cbd5e1' }
-        ], String(Number(met.ativos) || 0));
-      }
-      if (id === 'whatsapp') {
-        var envio = !!met.envio_habilitado;
-        var worker = !!met.worker_ativo;
-        var okWa = (String(item.status || '').toLowerCase() === 'ok') || (envio && worker);
-        var labelWa = okWa ? 'ON' : (envio ? 'WAIT' : 'OFF');
-        return healthDashDonutPct(okWa ? 100 : (envio ? 55 : 20), okWa ? '#0d9488' : color, labelWa);
-      }
-      if (id === 'nginx') {
-        return healthDashDonutPct(met.ativo ? 100 : 0, met.ativo ? '#0d9488' : '#dc2626', met.ativo ? 'UP' : 'DOWN');
-      }
-      if (id === 'certificado' && met.dias_restantes != null) {
-        var dias = Math.max(0, Number(met.dias_restantes) || 0);
-        var pctCert = Math.max(0, Math.min(100, (dias / 365) * 100));
-        return healthDashDonutPct(pctCert, color, String(Math.round(dias)) + 'd');
-      }
-      if (id === 'backup' && met.idade_horas != null) {
-        var idade = Math.max(0, Number(met.idade_horas) || 0);
-        var pctB = Math.max(0, Math.min(100, 100 - (idade / 24) * 100));
-        return healthDashDonutPct(pctB, color, (idade < 10 ? idade.toFixed(1) : Math.round(idade)) + 'h');
-      }
-      if (id === 'smtp' && met.latencia_ms != null) {
-        var lat = Math.max(0, Number(met.latencia_ms) || 0);
-        var pctSmtp = Math.max(0, Math.min(100, 100 - (lat / 1000) * 100));
-        return healthDashDonutPct(pctSmtp, color, Math.round(lat) + 'ms');
-      }
-      if (id === 'armazenamento' && Array.isArray(met.diretorios) && met.diretorios.length) {
-        var bars = met.diretorios.slice(0, 4).map(function(d, idx) {
-          var palette = ['#0d9488', '#0284c7', '#d97706', '#475569'];
-          return { v: Number(d.bytes) || 0, color: palette[idx % palette.length] };
-        });
-        return healthDashMiniBars(bars);
-      }
-      if (id === 'disco' && Array.isArray(met.particoes) && met.particoes.length > 1) {
-        return healthDashPieSvg(met.particoes.slice(0, 4).map(function(p, idx) {
-          var palette = ['#0d9488', '#0284c7', '#d97706', '#64748b'];
-          return { v: Math.max(0.1, Number(p.pct) || 0), color: palette[idx % palette.length] };
-        }), (Math.round(Number(met.barra_pct) || Number(met.pior_pct) || 0)) + '%');
-      }
-      if (met.barra_pct != null && isFinite(Number(met.barra_pct))) {
-        return healthDashDonutPct(Number(met.barra_pct), color);
-      }
-      if (st === 'ok') return healthDashDonutPct(100, '#0d9488', 'OK');
-      if (st === 'aviso') return healthDashDonutPct(66, '#d97706', '!');
-      if (st === 'risco') return healthDashDonutPct(80, '#ea580c', '!!');
-      if (st === 'erro') return healthDashDonutPct(100, '#dc2626', 'X');
-      return healthDashDonutPct(35, '#64748b', 'i');
+    function healthDashSection(title, bodyHtml) {
+      return '<div class="gf-section"><div class="gf-section-head"><span>' + healthDashEsc(title) +
+        '</span><span>v</span></div><div class="gf-section-body">' + bodyHtml + '</div></div>';
     }
 
     function renderHealthDashboard(data) {
@@ -6125,71 +6135,139 @@ def app_demo():
       var grid = document.getElementById('healthDashGrid');
       var man = document.getElementById('healthDashManutencao');
       if (!resumo || !grid) return;
+      if (man) man.style.display = 'none';
+
       var rg = (data && data.resumo_geral) || {};
       var erros = Number(rg.erros) || 0;
       var avisos = Number(rg.alertas) || 0;
       var normais = Number(rg.normais) || 0;
-      var indisponiveis = Number(rg.indisponiveis) || 0;
       var quando = '';
       if (data && data.checked_at) {
         try { quando = ' | ' + new Date(data.checked_at).toLocaleString('pt-BR'); } catch (eWhen) { quando = ''; }
       }
+      var bannerClass = 'gf-banner';
+      var bannerText = 'Visao geral saudavel - ' + normais + ' verificacoes ok' + quando;
       if (erros > 0) {
-        resumo.className = 'health-dash-summary health-dash-summary--erro';
-        resumo.textContent = 'Criticos: ' + erros + ' | alertas: ' + avisos + ' | ok: ' + normais + ' | indisponiveis: ' + indisponiveis + quando;
+        bannerClass += ' is-erro';
+        bannerText = 'Criticos: ' + erros + ' | alertas: ' + avisos + ' | ok: ' + normais + quando;
       } else if (avisos > 0 || !(data && data.ok)) {
-        resumo.className = 'health-dash-summary health-dash-summary--warn';
-        resumo.textContent = 'Atencao necessaria: ' + avisos + ' alerta(s) | ok: ' + normais + ' | indisponiveis: ' + indisponiveis + quando;
-      } else {
-        resumo.className = 'health-dash-summary health-dash-summary--ok';
-        resumo.textContent = 'Visao geral saudavel - ' + normais + ' verificacoes ok' + quando;
+        bannerClass += ' is-warn';
+        bannerText = 'Atencao: ' + avisos + ' alerta(s) | ok: ' + normais + quando;
       }
-      if (man) man.style.display = 'none';
-      grid.innerHTML = '';
-      var itens = Array.isArray(data && data.itens) ? data.itens.slice() : [];
-      var ordem = ['saude_geral','cpu','memoria','disco','postgres','whatsapp','smtp','nginx','wireguard','containers','servicos','backup','armazenamento','certificado'];
-      var map = {};
-      itens.forEach(function(it) { map[String(it.id || '')] = it; });
-      var ordered = [];
-      ordem.forEach(function(id) { if (map[id]) ordered.push(map[id]); });
-      itens.forEach(function(it) {
-        if (ordem.indexOf(String(it.id || '')) < 0) ordered.push(it);
+      resumo.className = bannerClass;
+      resumo.style.display = 'block';
+      resumo.textContent = bannerText;
+
+      var itens = Array.isArray(data && data.itens) ? data.itens : [];
+      var byId = healthDashById(itens);
+      var cpu = byId.cpu || {};
+      var mem = byId.memoria || {};
+      var disco = byId.disco || {};
+      var wg = byId.wireguard || {};
+      var pg = byId.postgres || {};
+      var cert = byId.certificado || {};
+      var smtp = byId.smtp || {};
+      var backup = byId.backup || {};
+      var nginx = byId.nginx || {};
+      var containers = byId.containers || {};
+      var servicos = byId.servicos || {};
+      var whatsapp = byId.whatsapp || {};
+      var armazenamento = byId.armazenamento || {};
+
+      var cpuPct = Number((cpu.metricas || {}).barra_pct != null ? cpu.metricas.barra_pct : (cpu.metricas || {}).pct);
+      var ramPct = Number((mem.metricas || {}).barra_pct != null ? mem.metricas.barra_pct : (mem.metricas || {}).pct);
+      var diskPct = Number((disco.metricas || {}).barra_pct != null ? disco.metricas.barra_pct : (disco.metricas || {}).pior_pct);
+      var pgPct = Number((pg.metricas || {}).barra_pct);
+      var peers = Number((wg.metricas || {}).peers) || 0;
+      var peersAtivos = Number((wg.metricas || {}).peers_ativos) || 0;
+      var wgPct = peers ? (peersAtivos / peers) * 100 : 0;
+      var certDias = Number((cert.metricas || {}).dias_restantes);
+      var certPct = isFinite(certDias) ? Math.max(0, Math.min(100, (certDias / 365) * 100)) : null;
+      var uptime = healthDashFormatUptime((cpu.metricas || {}).uptime_segundos);
+
+      var hist = healthDashHistoryPush({
+        t: Date.now(),
+        cpu: isFinite(cpuPct) ? cpuPct : null,
+        ram: isFinite(ramPct) ? ramPct : null,
+        disk: isFinite(diskPct) ? diskPct : null,
+        wg: isFinite(wgPct) ? wgPct : null,
+        pg: isFinite(pgPct) ? pgPct : null
       });
-      ordered.forEach(function(item) {
-        var st = String(item.status || 'info').toLowerCase();
-        if (['ok','aviso','risco','erro','info'].indexOf(st) < 0) st = 'info';
-        var box = document.createElement('div');
-        box.className = 'health-dash-item health-dash-item--' + st;
-        var chart = document.createElement('div');
-        chart.className = 'health-dash-chart';
-        chart.innerHTML = healthDashChartForItem(item, st);
-        var main = document.createElement('div');
-        main.className = 'health-dash-item-main';
-        var tit = document.createElement('div');
-        tit.className = 'health-dash-item-title';
-        tit.textContent = String(item.nome || item.id || 'Item');
-        var sum = document.createElement('div');
-        sum.className = 'health-dash-item-resumo';
-        var _lab = healthDashStatusLabel(st);
-        var _r = String(item.resumo || '');
-        // Sem escapes de barra no JS: o HTML vive em string Python triple-quote.
-        sum.textContent = (/^(OK|Atencao|Risco|Problema|Info)(?![A-Za-z0-9_])/i.test(_r) ? _r : (_lab + ' - ' + _r));
-        main.appendChild(tit);
-        main.appendChild(sum);
-        if (item.detalhe) {
-          var det = document.createElement('div');
-          det.className = 'health-dash-item-detalhe';
-          det.textContent = String(item.detalhe || '').split(String.fromCharCode(10)).slice(0, 2).join(' | ');
-          main.appendChild(det);
-        }
-        var chip = document.createElement('span');
-        chip.className = 'health-dash-chip' + (st !== 'ok' ? (' is-' + st) : '');
-        chip.textContent = healthDashStatusLabel(st);
-        main.appendChild(chip);
-        box.appendChild(chart);
-        box.appendChild(main);
-        grid.appendChild(box);
+      var cpuSeries = hist.map(function(h) { return h.cpu; }).filter(function(v) { return v != null; });
+      var ramSeries = hist.map(function(h) { return h.ram; }).filter(function(v) { return v != null; });
+      var diskSeries = hist.map(function(h) { return h.disk; }).filter(function(v) { return v != null; });
+
+      var kpis = '' +
+        '<div class="gf-kpis">' +
+          '<div class="gf-kpi"><div class="gf-kpi-label">Uptime</div><div class="gf-kpi-value is-ok">' + healthDashEsc(uptime) + '</div><div class="gf-kpi-sub">servidor AlmaLinux</div></div>' +
+          '<div class="gf-kpi"><div class="gf-kpi-label">CPU Usage</div><div class="gf-kpi-value ' + (cpuPct >= 85 ? 'is-erro' : (cpuPct >= 70 ? 'is-aviso' : 'is-ok')) + '">' + healthDashEsc(isFinite(cpuPct) ? (Math.round(cpuPct * 10) / 10) + '%' : '-') + '</div><div class="gf-kpi-sub">load ' + healthDashEsc((cpu.metricas || {}).load_1 != null ? (cpu.metricas || {}).load_1 : '-') + '</div></div>' +
+          '<div class="gf-kpi"><div class="gf-kpi-label">RAM Usage</div><div class="gf-kpi-value ' + (ramPct >= 85 ? 'is-erro' : (ramPct >= 70 ? 'is-aviso' : 'is-ok')) + '">' + healthDashEsc(healthDashFormatBytes((mem.metricas || {}).usada)) + '</div><div class="gf-kpi-sub">' + healthDashEsc(isFinite(ramPct) ? (Math.round(ramPct * 10) / 10) + '% de ' + healthDashFormatBytes((mem.metricas || {}).total) : '-') + '</div></div>' +
+          '<div class="gf-kpi"><div class="gf-kpi-label">Disk Usage</div><div class="gf-kpi-value ' + (diskPct >= 85 ? 'is-erro' : (diskPct >= 70 ? 'is-aviso' : 'is-ok')) + '">' + healthDashEsc(isFinite(diskPct) ? (Math.round(diskPct * 10) / 10) + '%' : '-') + '</div><div class="gf-kpi-sub">pior particao monitorada</div></div>' +
+          '<div class="gf-kpi"><div class="gf-kpi-label">WireGuard</div><div class="gf-kpi-value is-ok">' + healthDashEsc(peersAtivos + '/' + peers) + '</div><div class="gf-kpi-sub">peers ativos</div></div>' +
+        '</div>';
+
+      var trends = '' +
+        '<div class="gf-trends">' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster CPU</div><div class="gf-panel-chart">' + healthDashSparkSvg(cpuSeries, '#22c55e') + '</div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster RAM</div><div class="gf-panel-chart">' + healthDashSparkSvg(ramSeries, '#38bdf8') + '</div></div>' +
+          '<div class="gf-panel"><div class="gf-panel-title">Cluster Disk</div><div class="gf-panel-chart">' + healthDashSparkSvg(diskSeries, '#f59e0b') + '</div></div>' +
+        '</div>';
+
+      function gaugeCard(name, pct, sub) {
+        var color = healthDashPctColor(pct);
+        var val = isFinite(Number(pct)) ? Number(pct) : 0;
+        return '<div class="gf-gauge"><div class="gf-gauge-chart">' + healthDashGaugeSvg(val, color) +
+          '</div><div class="gf-gauge-name">' + healthDashEsc(name) + '</div><div class="gf-gauge-sub">' + healthDashEsc(sub || '') + '</div></div>';
+      }
+
+      var storageBars = '';
+      var dirs = ((armazenamento.metricas || {}).diretorios) || [];
+      if (dirs.length) {
+        var maxB = 0;
+        dirs.slice(0, 7).forEach(function(d) { maxB = Math.max(maxB, Number(d.bytes) || 0); });
+        if (maxB <= 0) maxB = 1;
+        storageBars = '<div class="gf-panel" style="min-height:132px;"><div class="gf-panel-title">Datastores / diretorios</div><div class="gf-panel-chart">';
+        storageBars += '<svg viewBox="0 0 360 100" aria-hidden="true">';
+        dirs.slice(0, 7).forEach(function(d, idx) {
+          var hBar = Math.max(4, ((Number(d.bytes) || 0) / maxB) * 78);
+          var x = 18 + idx * 48;
+          var y = 90 - hBar;
+          var colors = ['#22c55e', '#38bdf8', '#f59e0b', '#fb7185', '#a3e635', '#2dd4bf', '#94a3b8'];
+          storageBars += '<rect x="' + x + '" y="' + y.toFixed(1) + '" width="28" height="' + hBar.toFixed(1) + '" rx="3" fill="' + colors[idx % colors.length] + '"></rect>';
+        });
+        storageBars += '</svg></div></div>';
+      }
+
+      var gauges = '<div class="gf-gauges">' +
+        gaugeCard('CPU', cpuPct, (cpu.resumo || '')) +
+        gaugeCard('RAM', ramPct, (mem.resumo || '')) +
+        gaugeCard('Disco', diskPct, (disco.resumo || '')) +
+        gaugeCard('PostgreSQL', pgPct, (pg.resumo || '')) +
+        gaugeCard('WireGuard', wgPct, peersAtivos + '/' + peers + ' peers') +
+        gaugeCard('Certificado', certPct, isFinite(certDias) ? (Math.round(certDias) + ' dias') : (cert.resumo || '')) +
+        (storageBars || gaugeCard('Backup idade', Math.max(0, 100 - Math.min(100, (Number((backup.metricas || {}).idade_horas) || 0) / 24 * 100)), (backup.resumo || ''))) +
+      '</div>';
+
+      var serviceIds = ['nginx', 'whatsapp', 'smtp', 'postgres', 'containers', 'servicos', 'backup', 'certificado'];
+      var svcHtml = '<div class="gf-services">';
+      serviceIds.forEach(function(id) {
+        var it = byId[id];
+        if (!it) return;
+        var tone = healthDashStatusTone(it.status);
+        var meta = String(it.detalhe || '').split(String.fromCharCode(10)).slice(0, 1).join(' | ');
+        svcHtml += '<div class="gf-svc is-' + tone + '">' +
+          '<div class="gf-svc-title">' + healthDashEsc(it.nome || id) + '</div>' +
+          '<div class="gf-svc-resumo">' + healthDashEsc(it.resumo || '') + '</div>' +
+          '<div class="gf-svc-meta">' + healthDashEsc(meta) + '</div>' +
+          '</div>';
       });
+      svcHtml += '</div>';
+
+      grid.innerHTML =
+        healthDashSection('Cluster Status', kpis + trends) +
+        healthDashSection('Capacity / Gauges', gauges) +
+        healthDashSection('Services & Integrations', svcHtml);
+
       if (typeof atualizarBadgeHealthDashboard === 'function') {
         try { atualizarBadgeHealthDashboard(data); } catch (eBadge) {}
       }
@@ -12382,10 +12460,13 @@ async function carregarHealthDashboard(forceRefresh) {
               th { background: #f4f4f4; }
             
     /* HEALTH_DASH_CHARTS_V3_TAIL */
-    #modalHealthDashboard .health-dash-body, #modalHealthDashboard .health-dash-grid, #modalHealthDashboard .modal-box {
-      overflow: hidden !important;
+    #modalHealthDashboard .modal-box { overflow: hidden !important; }
+    #modalHealthDashboard .health-dash-body {
+      overflow: auto !important;
+      max-height: none !important;
     }
-    #modalHealthDashboard .health-dash-body { max-height: none !important; }
+    #modalHealthDashboard .health-dash-grid { overflow: visible !important; }
+
 </style>
           </head>
           <body>
