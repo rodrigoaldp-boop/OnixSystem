@@ -1904,139 +1904,229 @@ def app_demo():
       display: flex; justify-content: space-between; align-items: center; gap: 8px;
       margin-bottom: 8px; flex-shrink: 0;
     }
-    #modalHealthDashboard .health-dash-body {
-      overflow: auto; flex: 1; min-height: 0; padding-right: 2px;
-    }
+    #modalHealthDashboard .health-dash-body { overflow: hidden !important; max-height: none !important; }
     /* HEALTH_DASH_CHARTS_V3_BEGIN */
     #modalHealthDashboard.modal-overlay {
-      align-items: center;
-      justify-content: center;
-      padding: 2.2vh 2vw;
-      background: rgba(15, 23, 42, .48);
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 1.5vh 1.5vw !important;
+      background: rgba(15, 23, 42, .52) !important;
     }
-    #modalHealthDashboard .modal-box {
-      width: min(1280px, 94vw) !important;
-      height: min(88vh, 900px);
-      max-height: min(88vh, 900px);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border-radius: 16px;
-      border: 1px solid #dbe3ef;
+    #modalHealthDashboard .modal-box,
+    #modalHealthDashboard .modal-box.modal-box--finance {
+      width: min(1380px, 96vw) !important;
+      height: min(92vh, 980px) !important;
+      max-height: min(92vh, 980px) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      border-radius: 16px !important;
+      border: 1px solid #dbe3ef !important;
       background:
         radial-gradient(1200px 420px at 12% -10%, rgba(13, 148, 136, .10), transparent 55%),
         radial-gradient(900px 380px at 100% 0%, rgba(245, 158, 11, .08), transparent 50%),
-        #f8fafc;
-      box-shadow: 0 28px 64px rgba(15, 23, 42, .28);
-      padding: 14px 16px 12px;
+        #f8fafc !important;
+      box-shadow: 0 28px 64px rgba(15, 23, 42, .28) !important;
+      padding: 12px 14px 10px !important;
     }
     #modalHealthDashboard .health-dash-header {
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      margin-bottom: 6px; flex-shrink: 0;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 10px !important;
+      margin: 0 0 6px !important;
+      flex-shrink: 0 !important;
     }
     #modalHealthDashboard .health-dash-header > div:first-child {
-      font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -.02em;
+      font-size: 17px !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+      letter-spacing: -.02em !important;
     }
     #modalHealthDashboard .health-dash-body {
-      overflow: hidden;
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      overflow: hidden !important;
+      max-height: none !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      padding-right: 0 !important;
     }
     #modalHealthDashboard .health-dash-body > p.muted {
-      display: none;
+      display: none !important;
     }
     #modalHealthDashboard .health-dash-summary {
-      flex-shrink: 0;
-      font-size: 12px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      margin: 0;
-      border: 1px solid #e2e8f0;
-      background: rgba(255,255,255,.82);
-      font-weight: 700;
+      flex-shrink: 0 !important;
+      font-size: 12px !important;
+      padding: 7px 12px !important;
+      border-radius: 10px !important;
+      margin: 0 !important;
+      border: 1px solid #e2e8f0 !important;
+      background: rgba(255,255,255,.88) !important;
+      font-weight: 700 !important;
     }
-    #modalHealthDashboard .health-dash-summary--ok { border-color: #99f6e4; background: #f0fdfa; color: #0f766e; }
-    #modalHealthDashboard .health-dash-summary--warn { border-color: #fde68a; background: #fffbeb; color: #92400e; }
-    #modalHealthDashboard .health-dash-summary--erro { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+    #modalHealthDashboard .health-dash-summary--ok {
+      border-color: #99f6e4 !important;
+      background: #f0fdfa !important;
+      color: #0f766e !important;
+    }
+    #modalHealthDashboard .health-dash-summary--warn {
+      border-color: #fde68a !important;
+      background: #fffbeb !important;
+      color: #92400e !important;
+    }
+    #modalHealthDashboard .health-dash-summary--erro {
+      border-color: #fecaca !important;
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+    }
     #modalHealthDashboard .health-dash-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-      flex: 1;
-      min-height: 0;
-      align-content: stretch;
-      margin: 0;
-      overflow: hidden;
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      grid-auto-rows: 1fr !important;
+      gap: 7px !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      align-content: stretch !important;
+      margin: 0 !important;
+      overflow: hidden !important;
     }
-    #modalHealthDashboard .health-dash-group-title { display: none; }
+    #modalHealthDashboard .health-dash-group-title {
+      display: none !important;
+    }
     #modalHealthDashboard .health-dash-item {
-      display: grid;
-      grid-template-columns: 78px minmax(0, 1fr);
-      gap: 8px;
-      align-items: center;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: rgba(255,255,255,.92);
-      min-height: 0;
-      overflow: hidden;
-      box-shadow: 0 1px 0 rgba(15, 23, 42, .03);
+      display: grid !important;
+      grid-template-columns: 64px minmax(0, 1fr) !important;
+      gap: 8px !important;
+      align-items: center !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      padding: 8px 9px !important;
+      background: rgba(255,255,255,.94) !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      box-shadow: 0 1px 0 rgba(15, 23, 42, .03) !important;
     }
-    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #0d9488; }
-    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706; background: #fffdf7; }
-    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c; background: #fff7ed; }
-    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626; background: #fef2f2; }
-    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #64748b; }
+    #modalHealthDashboard .health-dash-item--ok { border-left: 4px solid #0d9488 !important; }
+    #modalHealthDashboard .health-dash-item--aviso { border-left: 4px solid #d97706 !important; background: #fffdf7 !important; }
+    #modalHealthDashboard .health-dash-item--risco { border-left: 4px solid #ea580c !important; background: #fff7ed !important; }
+    #modalHealthDashboard .health-dash-item--erro { border-left: 4px solid #dc2626 !important; background: #fef2f2 !important; }
+    #modalHealthDashboard .health-dash-item--info { border-left: 4px solid #64748b !important; }
     #modalHealthDashboard .health-dash-chart {
-      width: 78px; height: 78px; flex-shrink: 0;
+      width: 64px !important;
+      height: 64px !important;
+      flex-shrink: 0 !important;
     }
-    #modalHealthDashboard .health-dash-chart svg { width: 78px; height: 78px; display: block; }
-    #modalHealthDashboard .health-dash-item-main { min-width: 0; }
+    #modalHealthDashboard .health-dash-chart svg {
+      width: 64px !important;
+      height: 64px !important;
+      display: block !important;
+    }
+    #modalHealthDashboard .health-dash-item-main {
+      min-width: 0 !important;
+      overflow: hidden !important;
+    }
     #modalHealthDashboard .health-dash-item-title {
-      font-size: 12px; font-weight: 800; color: #0f172a; margin: 0 0 2px; line-height: 1.2;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 12px !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+      margin: 0 0 2px !important;
+      line-height: 1.15 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
     }
     #modalHealthDashboard .health-dash-item-resumo {
-      font-size: 11px; font-weight: 700; color: #334155; margin: 0 0 3px; line-height: 1.25;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      color: #334155 !important;
+      margin: 0 0 2px !important;
+      line-height: 1.2 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
     }
     #modalHealthDashboard .health-dash-item-detalhe {
-      font-size: 10px; color: #64748b; line-height: 1.3; white-space: normal; margin: 0;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      font-size: 10px !important;
+      color: #64748b !important;
+      line-height: 1.25 !important;
+      white-space: normal !important;
+      margin: 0 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 1 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
     }
     #modalHealthDashboard .health-dash-chip {
-      display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 999px;
-      font-size: 9px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase;
-      background: #ecfeff; color: #0f766e; border: 1px solid #99f6e4;
+      display: inline-block !important;
+      margin-top: 3px !important;
+      padding: 1px 6px !important;
+      border-radius: 999px !important;
+      font-size: 9px !important;
+      font-weight: 800 !important;
+      letter-spacing: .02em !important;
+      text-transform: uppercase !important;
+      background: #ecfeff !important;
+      color: #0f766e !important;
+      border: 1px solid #99f6e4 !important;
     }
-    #modalHealthDashboard .health-dash-chip.is-aviso { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    #modalHealthDashboard .health-dash-chip.is-aviso {
+      background: #fffbeb !important;
+      color: #92400e !important;
+      border-color: #fde68a !important;
+    }
     #modalHealthDashboard .health-dash-chip.is-risco,
-    #modalHealthDashboard .health-dash-chip.is-erro { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
-    #modalHealthDashboard .health-dash-chip.is-info { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    #modalHealthDashboard .health-dash-chip.is-erro {
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      border-color: #fecaca !important;
+    }
+    #modalHealthDashboard .health-dash-chip.is-info {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border-color: #cbd5e1 !important;
+    }
     #modalHealthDashboard .health-dash-bar,
-    #modalHealthDashboard .health-dash-bar-label { display: none; }
+    #modalHealthDashboard .health-dash-bar-label,
     #modalHealthDashboard .health-dash-manutencao {
-      display: none;
+      display: none !important;
     }
     #modalHealthDashboard #statusModalHealthDashboard {
-      flex-shrink: 0; margin-top: 2px !important; font-size: 11px;
+      flex-shrink: 0 !important;
+      margin-top: 2px !important;
+      font-size: 11px !important;
+      max-height: 1.4em !important;
+      overflow: hidden !important;
     }
-    @media (max-width: 1100px) {
-      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 1200px) {
+      #modalHealthDashboard .health-dash-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      }
     }
-    @media (max-width: 860px) {
-      #modalHealthDashboard .modal-box { width: min(96vw, 960px) !important; height: min(90vh, 900px); }
-      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      #modalHealthDashboard .health-dash-chart,
-      #modalHealthDashboard .health-dash-chart svg { width: 68px; height: 68px; }
-      #modalHealthDashboard .health-dash-item { grid-template-columns: 68px minmax(0, 1fr); }
+    @media (max-width: 900px) {
+      #modalHealthDashboard .modal-box,
+      #modalHealthDashboard .modal-box.modal-box--finance {
+        width: min(96vw, 980px) !important;
+        height: min(93vh, 980px) !important;
+        max-height: min(93vh, 980px) !important;
+      }
+      #modalHealthDashboard .health-dash-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+      #modalHealthDashboard .health-dash-item-detalhe {
+        display: none !important;
+      }
     }
     @media (max-width: 640px) {
-      #modalHealthDashboard .health-dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-      #modalHealthDashboard .health-dash-item-detalhe { -webkit-line-clamp: 1; }
+      #modalHealthDashboard .health-dash-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+      }
+      #modalHealthDashboard .health-dash-chip {
+        display: none !important;
+      }
     }
     /* HEALTH_DASH_CHARTS_V3_END */
 #modalHealthDashboard .health-dash-grid {
@@ -5874,7 +5964,7 @@ def app_demo():
     }
 
     function healthDashPieSvg(slices, centerText) {
-      var size = 78, cx = 39, cy = 39, r = 30, inner = 18;
+      var size = 64, cx = 32, cy = 32, r = 25, inner = 15;
       var total = 0;
       (slices || []).forEach(function(sl) { total += Math.max(0, Number(sl.v) || 0); });
       var parts = '';
@@ -5930,7 +6020,7 @@ def app_demo():
       var max = 0;
       list.forEach(function(r) { max = Math.max(max, Number(r.v) || 0); });
       if (max <= 0) max = 1;
-      var y = 8, h = 10, gap = 5, w = 78;
+      var y = 6, h = 8, gap = 4, w = 64;
       var parts = '';
       list.forEach(function(r, idx) {
         var val = Math.max(0, Number(r.v) || 0);
@@ -5983,8 +6073,11 @@ def app_demo():
         ], String(Number(met.ativos) || 0));
       }
       if (id === 'whatsapp') {
-        var okWa = met.worker_ativo && met.envio_habilitado;
-        return healthDashDonutPct(okWa ? 100 : (met.envio_habilitado ? 45 : 15), okWa ? '#0d9488' : color, okWa ? 'ON' : 'OFF');
+        var envio = !!met.envio_habilitado;
+        var worker = !!met.worker_ativo;
+        var okWa = (String(item.status || '').toLowerCase() === 'ok') || (envio && worker);
+        var labelWa = okWa ? 'ON' : (envio ? 'WAIT' : 'OFF');
+        return healthDashDonutPct(okWa ? 100 : (envio ? 55 : 20), okWa ? '#0d9488' : color, labelWa);
       }
       if (id === 'nginx') {
         return healthDashDonutPct(met.ativo ? 100 : 0, met.ativo ? '#0d9488' : '#dc2626', met.ativo ? 'UP' : 'DOWN');
@@ -12287,7 +12380,13 @@ async function carregarHealthDashboard(forceRefresh) {
               table { width: 100%; border-collapse: collapse; font-size: 12px; }
               th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
               th { background: #f4f4f4; }
-            </style>
+            
+    /* HEALTH_DASH_CHARTS_V3_TAIL */
+    #modalHealthDashboard .health-dash-body, #modalHealthDashboard .health-dash-grid, #modalHealthDashboard .modal-box {
+      overflow: hidden !important;
+    }
+    #modalHealthDashboard .health-dash-body { max-height: none !important; }
+</style>
           </head>
           <body>
             <h2>${escapeHtmlRelatorio(relatorioMetaCache.titulo || 'Relatorio Financeiro')}</h2>

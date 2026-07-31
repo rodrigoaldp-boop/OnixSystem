@@ -220,6 +220,27 @@ def patch_main_charts_v3(text: str) -> str:
     css = _read_charts_asset("health_dash_charts_v3.css").strip() + "\n"
     js = _js_safe_for_python_triple_string(_read_charts_asset("health_dash_charts_v3.js").strip() + "\n")
 
+    # Remove layout V2 antigo (overflow:auto) que conflita com o painel de graficos.
+    if "HEALTH_DASH_LAYOUT_V2" in text:
+        text2, n_v2 = re.subn(
+            r"/\*\s*HEALTH_DASH_LAYOUT_V2\s*\*/[\s\S]*?(?=#modalHealthDashboard \.health-dash-grid|#modalHealthDashboard \.health-dash-item-title|/\* HEALTH_DASH_CHARTS)",
+            "",
+            text,
+            count=1,
+        )
+        if n_v2:
+            text = text2
+            print("  - removido HEALTH_DASH_LAYOUT_V2 conflitante")
+
+    # Neutraliza qualquer overflow:auto residual no body do modal de saude.
+    text, n_auto = re.subn(
+        r"#modalHealthDashboard\s+\.health-dash-body\s*\{[^}]*overflow\s*:\s*auto[^}]*\}",
+        "#modalHealthDashboard .health-dash-body { overflow: hidden !important; max-height: none !important; }",
+        text,
+    )
+    if n_auto:
+        print(f"  - neutralizados {n_auto} overflow:auto no health-dash-body")
+
     if "HEALTH_DASH_CHARTS_V3_BEGIN" in text:
         text = re.sub(
             r"/\* HEALTH_DASH_CHARTS_V3_BEGIN \*/[\s\S]*?/\* HEALTH_DASH_CHARTS_V3_END \*/\s*",
@@ -229,6 +250,7 @@ def patch_main_charts_v3(text: str) -> str:
         )
         print("  ~ CSS charts v3 atualizado")
     else:
+        # Insere no fim do bloco de style do health, se possivel apos o ultimo CSS health.
         anchor = "#modalHealthDashboard .health-dash-grid"
         idx = text.find(anchor)
         if idx < 0:
@@ -238,6 +260,23 @@ def patch_main_charts_v3(text: str) -> str:
         else:
             text = text[:idx] + css + text[idx:]
             print("  + CSS charts v3 inserido")
+
+    # Garante CSS final vencedor tambem ao final da folha (depois de regras antigas).
+    if "HEALTH_DASH_CHARTS_V3_TAIL" not in text:
+        tail = (
+            "\n    /* HEALTH_DASH_CHARTS_V3_TAIL */\n"
+            "    #modalHealthDashboard .health-dash-body,"
+            " #modalHealthDashboard .health-dash-grid,"
+            " #modalHealthDashboard .modal-box {\n"
+            "      overflow: hidden !important;\n"
+            "    }\n"
+            "    #modalHealthDashboard .health-dash-body { max-height: none !important; }\n"
+        )
+        # inserir antes do fechamento </style> mais proximo apos modal health, ou no ultimo </style>
+        style_close = text.rfind("</style>")
+        if style_close > 0:
+            text = text[:style_close] + tail + text[style_close:]
+            print("  + CSS tail anti-scroll inserido")
 
     if "HEALTH_DASH_CHARTS_V3_JS_BEGIN" in text:
         text = re.sub(
@@ -303,8 +342,8 @@ def patch_main_css(text: str) -> str:
             end = text.find("\n", idx)
             text = text[:end] + "\n" + css + text[end:]
 
-    # Layout scrollavel: modal-box overflow:hidden corta o grid se nao houver body flex.
-    if "HEALTH_DASH_LAYOUT_V2" not in text:
+    # Layout antigo com scroll — desativado; charts v3 assume overflow hidden.
+    if "HEALTH_DASH_LAYOUT_V2" not in text and "HEALTH_DASH_CHARTS_V3_BEGIN" not in text:
         layout_css = '''
     /* HEALTH_DASH_LAYOUT_V2 */
     #modalHealthDashboard .modal-box {
@@ -319,7 +358,7 @@ def patch_main_css(text: str) -> str:
       margin-bottom: 8px; flex-shrink: 0;
     }
     #modalHealthDashboard .health-dash-body {
-      overflow: auto; flex: 1; min-height: 0; padding-right: 2px;
+      overflow: hidden; flex: 1; min-height: 0; padding-right: 2px;
     }
     #modalHealthDashboard .health-dash-summary--warn {
       border-color: #fed7aa; background: #fff7ed; color: #9a3412;
@@ -332,7 +371,7 @@ def patch_main_css(text: str) -> str:
         idx = text.find(anchor)
         if idx >= 0:
             text = text[:idx] + layout_css + text[idx:]
-            print("  + CSS layout scrollavel do modal")
+            print("  + CSS layout do modal")
         else:
             print("  aviso: nao achei .health-dash-grid para inserir layout CSS")
     return text
@@ -677,8 +716,12 @@ def deploy_one(sga: Path, backup_root: Path) -> None:
         print("  OK BotBot intacto:", botbot)
 
 
-def maybe_restart() -> None:
+def maybe_restart(only_substrings=None) -> None:
     for unit in ("onix-prod.service", "onix-homolog.service"):
+        if only_substrings:
+            key = "onixsystem-prod" if "prod" in unit else "onixsystem-homolog"
+            if not any(o in key or o in unit for o in only_substrings):
+                continue
         r = subprocess.run(["systemctl", "is-active", unit], capture_output=True, text=True)
         if r.returncode != 0:
             print(f"  skip restart {unit}: {r.stdout.strip() or r.stderr.strip()}")
@@ -721,7 +764,7 @@ def main() -> None:
         deploy_one(t, backup_root)
 
     if args.restart:
-        maybe_restart()
+        maybe_restart(args.only or None)
     else:
         print("\nSem --restart. Para aplicar: systemctl restart onix-prod.service onix-homolog.service")
     print("\nCONCLUIDO. Abra Configuracoes > Saude do sistema (admin) e clique Atualizar.")

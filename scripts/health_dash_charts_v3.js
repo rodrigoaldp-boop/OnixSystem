@@ -13,7 +13,7 @@
     }
 
     function healthDashPieSvg(slices, centerText) {
-      var size = 78, cx = 39, cy = 39, r = 30, inner = 18;
+      var size = 64, cx = 32, cy = 32, r = 25, inner = 15;
       var total = 0;
       (slices || []).forEach(function(sl) { total += Math.max(0, Number(sl.v) || 0); });
       var parts = '';
@@ -69,7 +69,7 @@
       var max = 0;
       list.forEach(function(r) { max = Math.max(max, Number(r.v) || 0); });
       if (max <= 0) max = 1;
-      var y = 8, h = 10, gap = 5, w = 78;
+      var y = 6, h = 8, gap = 4, w = 64;
       var parts = '';
       list.forEach(function(r, idx) {
         var val = Math.max(0, Number(r.v) || 0);
@@ -122,8 +122,11 @@
         ], String(Number(met.ativos) || 0));
       }
       if (id === 'whatsapp') {
-        var okWa = met.worker_ativo && met.envio_habilitado;
-        return healthDashDonutPct(okWa ? 100 : (met.envio_habilitado ? 45 : 15), okWa ? '#0d9488' : color, okWa ? 'ON' : 'OFF');
+        var envio = !!met.envio_habilitado;
+        var worker = !!met.worker_ativo;
+        var okWa = (String(item.status || '').toLowerCase() === 'ok') || (envio && worker);
+        var labelWa = okWa ? 'ON' : (envio ? 'WAIT' : 'OFF');
+        return healthDashDonutPct(okWa ? 100 : (envio ? 55 : 20), okWa ? '#0d9488' : color, labelWa);
       }
       if (id === 'nginx') {
         return healthDashDonutPct(met.ativo ? 100 : 0, met.ativo ? '#0d9488' : '#dc2626', met.ativo ? 'UP' : 'DOWN');
