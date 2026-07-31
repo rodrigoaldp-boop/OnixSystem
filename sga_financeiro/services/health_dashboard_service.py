@@ -269,67 +269,135 @@ def checar_postgres(db: Optional[Session] = None) -> dict[str, Any]:
         )
 
 
+def _carregar_botbot_cfg_fallback() -> tuple[dict[str, Any], bool]:
+    """Le config BotBot de arquivos conhecidos quando o modulo Python nao esta no path.
+
+    Nao desativa nem altera a integracao — so leitura para o diagnostico.
+    """
+    candidatos = [
+        Path(__file__).resolve().parents[1] / "botbot_whatsapp_config.json",
+        Path(__file__).resolve().parents[2] / "botbot_whatsapp_config.json",
+        Path(__file__).resolve().parents[1] / "whatsapp_botbot_config.json",
+    ]
+    try:
+        from sga_financeiro.local_config import local_config_path
+
+        candidatos.append(local_config_path().parent / "botbot_whatsapp_config.json")
+    except Exception:
+        pass
+
+    for path in candidatos:
+        try:
+            if not path.is_file():
+                continue
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(raw, dict):
+                continue
+            # nunca expor segredos no retorno do fallback
+            cfg = {
+                "enabled": bool(raw.get("enabled")),
+                "provider": str(raw.get("provider") or "botbee").strip().lower() or "botbee",
+                "api_url": "***" if raw.get("api_url") or raw.get("url") else "",
+                "has_token": bool(str(raw.get("token") or raw.get("api_token") or "").strip()),
+            }
+            configurado = bool(
+                str(raw.get("api_url") or raw.get("url") or "").strip()
+                and str(raw.get("token") or raw.get("api_token") or "").strip()
+            ) or bool(raw.get("configured"))
+            return cfg, configurado
+        except Exception:
+            continue
+
+    local = load_local_config()
+    if any(k in local for k in ("botbot_url", "botbot_token", "whatsapp_botbot_url")):
+        configurado = bool(
+            str(local.get("botbot_url") or local.get("whatsapp_botbot_url") or "").strip()
+            and str(local.get("botbot_token") or local.get("whatsapp_botbot_token") or "").strip()
+        )
+        return {
+            "enabled": bool(local.get("botbot_enabled", configurado)),
+            "provider": str(local.get("botbot_provider") or "botbee").strip().lower(),
+            "has_token": configurado,
+        }, configurado
+    return {}, False
+
+
 def checar_whatsapp(db: Optional[Session] = None) -> dict[str, Any]:
+    """Mesma logica do diagnostico original (prod): config + worker + falhas 24h.
+
+    Nao envia mensagem, nao altera config e nao desliga BotBot.
+    """
+    load_botbot_whatsapp_config = None
+    botbot_whatsapp_configurado = None
     try:
         from sga_financeiro.botbot_whatsapp_config import (  # type: ignore
-            botbot_whatsapp_configurado,
-            load_botbot_whatsapp_config,
-        )
-    except Exception:
-        return _item(
-            "whatsapp",
-            "WhatsApp (BotBot)",
-            STATUS_INFO,
-            "Integracao nao disponivel neste build",
-            "Modulo BotBot nao encontrado nesta instalacao.",
-            grupo=GRUPO_APLICACAO,
+            botbot_whatsapp_configurado as _cfg_ok,
+            load_botbot_whatsapp_config as _load_cfg,
         )
 
+        load_botbot_whatsapp_config = _load_cfg
+        botbot_whatsapp_configurado = _cfg_ok
+    except Exception:
+        load_botbot_whatsapp_config = None
+        botbot_whatsapp_configurado = None
+
+    worker = {"habilitado": False, "worker_ativo": False, "intervalo_segundos": None}
     try:
         from sga_financeiro.services.lembrete_automatico_service import (  # type: ignore
             status_worker_lembrete_automatico,
         )
 
-        worker = status_worker_lembrete_automatico()
+        worker = status_worker_lembrete_automatico() or worker
     except Exception:
-        worker = {"habilitado": False, "worker_ativo": False, "intervalo_segundos": None}
+        pass
 
-    cfg = load_botbot_whatsapp_config()
-    configurado = botbot_whatsapp_configurado()
+    if load_botbot_whatsapp_config and botbot_whatsapp_configurado:
+        cfg = load_botbot_whatsapp_config() or {}
+        configurado = bool(botbot_whatsapp_configurado())
+    else:
+        cfg, configurado = _carregar_botbot_cfg_fallback()
+
     habilitado = bool(cfg.get("enabled"))
-    provider = str(cfg.get("provider") or "botbee").strip().lower()
+    provider = str(cfg.get("provider") or "botbee").strip().lower() or "botbee"
     falhas_24h = 0
     pendentes = None
-    if db is not None:
-        try:
-            row = db.execute(
-                text(
-                    """
-                    SELECT COUNT(*) AS n
-                    FROM lembrete_whatsapp_historico
-                    WHERE sucesso = FALSE
-                      AND enviado_em >= (NOW() AT TIME ZONE 'utc') - INTERVAL '24 hours'
-                    """
-                )
-            ).mappings().first()
-            if row:
-                falhas_24h = int(row.get("n") or 0)
-        except Exception:
-            falhas_24h = 0
-        try:
-            row_p = db.execute(
-                text(
-                    """
-                    SELECT COUNT(*) AS n
-                    FROM lembrete_whatsapp_fila
-                    WHERE processado = FALSE OR processado IS NULL
-                    """
-                )
-            ).mappings().first()
-            if row_p:
-                pendentes = int(row_p.get("n") or 0)
-        except Exception:
-            pendentes = None
+
+    # Contagens via engine (nao depende de Session cross-thread)
+    try:
+        with _get_engine().connect() as conn:
+            try:
+                row = conn.execute(
+                    text(
+                        """
+                        SELECT COUNT(*) AS n
+                        FROM lembrete_whatsapp_historico
+                        WHERE sucesso = FALSE
+                          AND enviado_em >= (NOW() AT TIME ZONE 'utc') - INTERVAL '24 hours'
+                        """
+                    )
+                ).mappings().first()
+                if row:
+                    falhas_24h = int(row.get("n") or 0)
+            except Exception:
+                falhas_24h = 0
+            try:
+                row_p = conn.execute(
+                    text(
+                        """
+                        SELECT COUNT(*) AS n
+                        FROM lembrete_whatsapp_fila
+                        WHERE processado = FALSE OR processado IS NULL
+                        """
+                    )
+                ).mappings().first()
+                if row_p:
+                    pendentes = int(row_p.get("n") or 0)
+            except Exception:
+                # tabela de fila pode nao existir — ok
+                pendentes = None
+    except Exception:
+        # banco indisponivel: ainda reporta config/worker sem derrubar o card
+        pass
 
     if not configurado:
         return _item(
@@ -366,6 +434,7 @@ def checar_whatsapp(db: Optional[Session] = None) -> dict[str, Any]:
         metricas["fila_pendente"] = pendentes
 
     detalhe = "\n".join(detalhe_parts)
+    # Nunca incluir token/url no detalhe
     if falhas_24h >= 5:
         return _item("whatsapp", "WhatsApp (BotBot)", STATUS_ERRO, f"{falhas_24h} falhas nas ultimas 24h", detalhe, grupo=GRUPO_APLICACAO, metricas=metricas)
     if not habilitado:

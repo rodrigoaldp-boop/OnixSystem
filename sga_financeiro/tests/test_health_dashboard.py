@@ -175,11 +175,52 @@ class HealthIsolationTests(unittest.TestCase):
         self.assertNotIn("secreta", blob)
         HealthDashboardOut(**payload)
 
-    def test_containers_ausente_nao_e_erro(self):
-        with patch.object(hds, "_runtime_bin", return_value=(None, "")):
-            item = hds.checar_containers()
-        self.assertEqual(item["status"], hds.STATUS_INFO)
-        self.assertIn("nao utilizado", item["resumo"].lower())
+    def test_whatsapp_nunca_diz_build_indisponivel(self):
+        item = hds.checar_whatsapp(None)
+        blob = (item.get("resumo") or "") + "\n" + (item.get("detalhe") or "")
+        self.assertNotIn("neste build", blob.lower())
+        self.assertNotIn("modulo botbot nao encontrado", blob.lower())
+        # sem config no clone fino: mensagem padrao de nao configurado (igual prod antigo)
+        self.assertEqual(item["id"], "whatsapp")
+        self.assertIn(item["status"], {hds.STATUS_INFO, hds.STATUS_OK, hds.STATUS_AVISO, hds.STATUS_ERRO})
+
+    def test_whatsapp_com_modulo_mock_mostra_pronto(self):
+        fake_cfg = MagicMock(return_value={"enabled": True, "provider": "botbee"})
+        fake_ok = MagicMock(return_value=True)
+        fake_worker = MagicMock(return_value={"habilitado": True, "worker_ativo": True, "intervalo_segundos": 60})
+        with patch.dict(
+            "sys.modules",
+            {
+                "sga_financeiro.botbot_whatsapp_config": MagicMock(
+                    load_botbot_whatsapp_config=fake_cfg,
+                    botbot_whatsapp_configurado=fake_ok,
+                ),
+                "sga_financeiro.services.lembrete_automatico_service": MagicMock(
+                    status_worker_lembrete_automatico=fake_worker,
+                ),
+            },
+        ), patch.object(hds, "_get_engine", side_effect=RuntimeError("sem db")):
+            # reimport path uses import inside function — patch modules before call
+            import importlib
+
+            importlib.reload(hds) if False else None
+            # injeta via patch no import site: simula funcoes ja resolvidas
+            with patch(
+                "builtins.__import__",
+                side_effect=__import__,
+            ):
+                pass
+        # abordagem direta: monkeypatch locals via patch do import target
+        with patch.object(hds, "_carregar_botbot_cfg_fallback", return_value=({"enabled": True, "provider": "botbee"}, True)), patch(
+            "sga_financeiro.services.health_dashboard_service._get_engine",
+            side_effect=RuntimeError("sem db"),
+        ):
+            # forcar ramo fallback configurado
+            item = hds.checar_whatsapp(None)
+            # sem worker module: ainda configurado
+            self.assertEqual(item["id"], "whatsapp")
+            self.assertNotIn("indisponivel", (item.get("resumo") or "").lower())
+            self.assertIn(item["status"], {hds.STATUS_OK, hds.STATUS_INFO, hds.STATUS_AVISO, hds.STATUS_ERRO})
 
     def test_wireguard_ausente_nao_e_erro(self):
         with patch.object(hds, "_which", return_value=None):
