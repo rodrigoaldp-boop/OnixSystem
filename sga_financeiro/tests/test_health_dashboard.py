@@ -222,6 +222,12 @@ class HealthIsolationTests(unittest.TestCase):
             self.assertNotIn("indisponivel", (item.get("resumo") or "").lower())
             self.assertIn(item["status"], {hds.STATUS_OK, hds.STATUS_INFO, hds.STATUS_AVISO, hds.STATUS_ERRO})
 
+    def test_containers_ausente_nao_e_erro(self):
+        with patch.object(hds, "_runtime_bin", return_value=(None, "")):
+            item = hds.checar_containers()
+        self.assertEqual(item["status"], hds.STATUS_INFO)
+        self.assertIn("nao utilizado", item["resumo"].lower())
+
     def test_wireguard_ausente_nao_e_erro(self):
         with patch.object(hds, "_which", return_value=None):
             item = hds.checar_wireguard()
