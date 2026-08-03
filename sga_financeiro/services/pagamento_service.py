@@ -158,6 +158,7 @@ def receber_conta_receber(
     perdoar_multa / perdoar_juros: nao soma o encargo correspondente ao total devido.
     """
     from sga_financeiro.models.movimentacao import Movimentacao, TipoMovimentacao
+    from sga_financeiro.services.conta_receber_extrato_service import registrar_evento_recebimento
     from sga_financeiro.services.encargos_atraso_service import calcular_encargos_da_conta_receber
 
     if conta_receber.status == StatusContaReceber.RECEBIDO:
@@ -175,6 +176,18 @@ def receber_conta_receber(
     principal = Decimal(enc["valor_principal"])
     multa = Decimal(enc.get("multa") or 0)
     juros = Decimal(enc.get("juros") or 0)
+    principal_antes = principal
+    multa_antes = multa
+    juros_antes = juros
+    total_antes = total_devido
+    abate_prin = Decimal("0.00")
+    abate_juros = Decimal("0.00")
+    abate_multa = Decimal("0.00")
+    principal_depois = principal
+    multa_depois = multa
+    juros_depois = juros
+    total_depois = total_devido
+    tipo_evento = "total"
     try:
         vr = (
             Decimal(str(valor_recebido)).quantize(Decimal("0.01"))
@@ -260,6 +273,7 @@ def receber_conta_receber(
 
     obs_extra = ""
     if not recebimento_total:
+        tipo_evento = "parcial"
         # Abate principal primeiro; sobra vai para juros e depois multa.
         resto = vr
         abate_prin = min(resto, principal)
@@ -293,6 +307,10 @@ def receber_conta_receber(
         saldo_total = (novo_principal + Decimal(conta_receber.multa_fixada or 0) + juros_restantes).quantize(
             Decimal("0.01")
         )
+        principal_depois = novo_principal
+        multa_depois = Decimal(conta_receber.multa_fixada or 0)
+        juros_depois = juros_restantes if not perdoar_juros else Decimal("0.00")
+        total_depois = saldo_total
         obs_extra = (
             f"Recebimento parcial R$ {vr} em {data_rec.isoformat()} "
             f"(principal R$ {abate_prin}"
@@ -302,6 +320,14 @@ def receber_conta_receber(
             f"juros R$ {juros_restantes} (total R$ {saldo_total})."
         )
     else:
+        tipo_evento = "total"
+        abate_prin = principal
+        abate_juros = juros
+        abate_multa = multa
+        principal_depois = Decimal("0.00")
+        multa_depois = Decimal("0.00")
+        juros_depois = Decimal("0.00")
+        total_depois = Decimal("0.00")
         conta_receber.status = StatusContaReceber.RECEBIDO
         conta_receber.data_recebimento = data_rec
         conta_receber.conta_destino_id = conta_corrente.id
@@ -334,6 +360,38 @@ def receber_conta_receber(
             conta_receber.comprovante_url = f"{base} | {obs_extra}".strip(" |") if base else obs_extra
         elif comprovante_url is not None:
             conta_receber.comprovante_url = comprovante_url
+
+    try:
+        registrar_evento_recebimento(
+            db,
+            conta=conta_receber,
+            tipo=tipo_evento,
+            data_evento=data_rec,
+            valor_recebido=vr,
+            abate_principal=abate_prin,
+            abate_juros=abate_juros,
+            abate_multa=abate_multa,
+            principal_antes=principal_antes,
+            principal_depois=principal_depois,
+            multa_antes=multa_antes,
+            multa_depois=multa_depois,
+            juros_antes=juros_antes,
+            juros_depois=juros_depois,
+            total_antes=total_antes,
+            total_depois=total_depois,
+            dias_atraso=int(enc.get("dias_atraso") or 0),
+            conta_destino_id=int(conta_corrente.id),
+            movimentacao_ref=ref,
+            observacao=obs_extra or None,
+        )
+    except Exception:
+        # Nao impede o recebimento se o historico falhar; log fica no worker/app.
+        import logging
+
+        logging.getLogger(__name__).exception(
+            "Falha ao registrar evento de recebimento da conta %s", getattr(conta_receber, "id", "?")
+        )
+
     _notificar_whatsapp_recebimento_conta(db, conta_receber, conta_corrente, vr, data_rec)
     return conta_receber
 

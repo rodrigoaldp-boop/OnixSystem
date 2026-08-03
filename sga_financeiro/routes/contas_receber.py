@@ -756,6 +756,14 @@ def historico_lembrete_whatsapp_conta(conta_id: int, db: Session = Depends(get_d
     return {"conta_id": int(conta_id), "itens": itens}
 
 
+@router.get("/{conta_id}/extrato-divida")
+def extrato_divida_conta_receber(conta_id: int, db: Session = Depends(get_db)) -> dict:
+    """Extrato da divida: situacao atual + historico de recebimentos parciais/totais."""
+    from sga_financeiro.services.conta_receber_extrato_service import montar_extrato_divida
+
+    return montar_extrato_divida(db, int(conta_id))
+
+
 @router.post("/{conta_id}/enviar-lembrete-whatsapp", response_model=ContaReceberEnviarPixWhatsappOut)
 def enviar_lembrete_whatsapp_conta(conta_id: int, db: Session = Depends(get_db)) -> ContaReceberEnviarPixWhatsappOut:
     ret = enviar_lembrete_pagamento_conta_whatsapp(db, conta_id=int(conta_id))
