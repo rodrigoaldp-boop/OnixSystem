@@ -141,7 +141,10 @@ def _cadastro_elegivel_faturamento_auto(cad: CadastroGeral, cat_ids: set[int]) -
 
 
 def _reservar_faturamento(db: Session, *, cadastro_id: int, data_vencimento: date) -> bool:
-    """Reserva vencimento; permite nova tentativa se a anterior falhou."""
+    """Reserva vencimento; permite nova tentativa se a anterior falhou.
+
+    Preserva venda_id/conta ja gerados para retomar NFS-e/documentos sem duplicar pedido.
+    """
     row = db.execute(
         text(
             """
@@ -152,9 +155,7 @@ def _reservar_faturamento(db: Session, *, cadastro_id: int, data_vencimento: dat
             ON CONFLICT (cadastro_id, data_vencimento)
             DO UPDATE SET
                 detalhe = EXCLUDED.detalhe,
-                sucesso = FALSE,
-                venda_id = NULL,
-                conta_receber_id = NULL
+                sucesso = FALSE
             WHERE faturamento_automatico_historico.sucesso = FALSE
             RETURNING id
             """
@@ -165,6 +166,32 @@ def _reservar_faturamento(db: Session, *, cadastro_id: int, data_vencimento: dat
         return False
     db.commit()
     return True
+
+
+def _historico_venda_conta(
+    db: Session, *, cadastro_id: int, data_vencimento: date
+) -> tuple[int | None, int | None]:
+    row = db.execute(
+        text(
+            """
+            SELECT venda_id, conta_receber_id
+            FROM faturamento_automatico_historico
+            WHERE cadastro_id = :cid AND data_vencimento = :venc
+            LIMIT 1
+            """
+        ),
+        {"cid": int(cadastro_id), "venc": data_vencimento},
+    ).first()
+    if not row:
+        return None, None
+    vid = int(row[0]) if row[0] is not None else None
+    crid = int(row[1]) if row[1] is not None else None
+    return vid, crid
+
+
+def _cadastro_exige_documento_fiscal(cad: CadastroGeral) -> bool:
+    """Respeita o campo Documento (Sim) da aba Informacoes do cadastro."""
+    return bool(getattr(cad, "info_documento", False))
 
 
 def _faturamento_ja_sucesso(db: Session, *, cadastro_id: int, data_vencimento: date) -> bool:
@@ -224,6 +251,62 @@ def _conta_principal_venda(db: Session, venda_id: int) -> ContaReceber | None:
     )
 
 
+def _emitir_nfse_e_enviar_documentos(
+    db: Session,
+    *,
+    cad: CadastroGeral,
+    venda_id: int,
+) -> list[str]:
+    """Fluxo MENSALISTA/Documento=Sim: NFS-e + e-mail com documentos + WhatsApp de aviso."""
+    from sga_financeiro.models.venda import Venda
+    from sga_financeiro.routes.vendas import executar_gerar_nfse_core
+    from sga_financeiro.services.documentos_email_service import enviar_documentos_venda_por_email
+
+    detalhes: list[str] = []
+    venda = db.get(Venda, int(venda_id))
+    if not venda:
+        raise HTTPException(status_code=500, detail="Venda nao encontrada para emissao fiscal.")
+
+    if not bool(getattr(venda, "nfse_gerada", False)):
+        ret = executar_gerar_nfse_core(db, int(venda_id), None)
+        em = ret.get("emissao") or ret.get("nfse") or {}
+        db.refresh(venda)
+        if not bool(getattr(venda, "nfse_gerada", False)):
+            msg = str(em.get("mensagem") or "NFS-e nao autorizada.")
+            raise HTTPException(status_code=400, detail=f"NFS-e nao autorizada: {msg}")
+        num = getattr(venda, "nfse_numero", None) or em.get("numero_nfse") or ""
+        detalhes.append(f"NFS-e autorizada{f' #{num}' if num else ''}.")
+    else:
+        detalhes.append("NFS-e ja gerada.")
+
+    if getattr(venda, "documentos_email_enviado_at", None):
+        detalhes.append("E-mail de documentos ja enviado.")
+        return detalhes
+
+    if not smtp_documentos_configurado():
+        raise HTTPException(
+            status_code=503,
+            detail="SMTP de documentos nao configurado; nao foi possivel enviar NFS-e/boleto.",
+        )
+
+    mail = enviar_documentos_venda_por_email(
+        db,
+        venda_id=int(venda_id),
+        destinatario_override=None,
+        notificar_whatsapp=bool(getattr(cad, "botbot_enviar_whatsapp", False)),
+    )
+    dest = str(mail.get("destinatario") or "")
+    detalhes.append(f"E-mail documentos: {dest or 'enviado'}.")
+    if bool(getattr(cad, "botbot_enviar_whatsapp", False)):
+        if mail.get("whatsapp_enviado"):
+            detalhes.append("WhatsApp: aviso de cobranca/documentos enviado.")
+        else:
+            detalhes.append(
+                f"WhatsApp: {mail.get('whatsapp_detalhe') or 'nao enviado'}."
+            )
+    return detalhes
+
+
 def _enviar_lembretes_pos_faturamento(
     db: Session,
     *,
@@ -231,7 +314,7 @@ def _enviar_lembretes_pos_faturamento(
     conta: ContaReceber,
     dias_antes: int,
 ) -> list[str]:
-    """Envia WhatsApp/e-mail no padrao do lembrete automatico do cadastro."""
+    """RENT / Documento=Nao: WhatsApp/e-mail de cobranca (PIX/boleto), sem NFS-e."""
     detalhes: list[str] = []
     venc = conta.data_vencimento
     if not venc:
@@ -309,6 +392,25 @@ def _enviar_lembretes_pos_faturamento(
     return detalhes
 
 
+def _garantir_cobranca_asaas_conta(db: Session, *, venda, conta: ContaReceber) -> None:
+    cond = None
+    if venda.condicao_pagamento_id:
+        from sga_financeiro.models.condicao_pagamento import CondicaoPagamento
+
+        cond = db.get(CondicaoPagamento, int(venda.condicao_pagamento_id))
+    tipo_asaas = asaas_service.tipo_emissao_asaas_para_condicao(cond)
+    if tipo_asaas and effective_asaas_runtime().get("enabled"):
+        asaas_service.sincronizar_dados_cobranca_asaas_conta(db, conta)
+        if not asaas_service.conta_tem_meio_pagamento_asaas(conta):
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "Cobranca Asaas nao gerada (sem link/PIX). "
+                    "Verifique CPF/CNPJ do cliente, condicao de pagamento e integracao Asaas."
+                ),
+            )
+
+
 def _processar_cadastro_faturamento_auto(
     db: Session,
     *,
@@ -322,49 +424,72 @@ def _processar_cadastro_faturamento_auto(
     venda_id: int | None = None
     conta_id: int | None = None
     try:
-        venda = _criar_venda_de_cadastro_info(db, cad)
-        venda.observacao = (
-            f"Gerado automaticamente (faturamento mensalista, venc. "
-            f"{data_vencimento.strftime('%d/%m/%Y')})."
-        )
-        db.flush()
-        _gerar_financeiro_da_venda(db, venda)
-        db.flush()
-        venda_id = int(venda.id)
-        conta = _conta_principal_venda(db, venda_id)
-        if not conta:
-            raise HTTPException(status_code=500, detail="Financeiro gerado sem conta a receber.")
-        conta_id = int(conta.id)
-        cond = None
-        if venda.condicao_pagamento_id:
-            from sga_financeiro.models.condicao_pagamento import CondicaoPagamento
+        from sga_financeiro.models.venda import Venda
 
-            cond = db.get(CondicaoPagamento, int(venda.condicao_pagamento_id))
-        tipo_asaas = asaas_service.tipo_emissao_asaas_para_condicao(cond)
-        if tipo_asaas and effective_asaas_runtime().get("enabled"):
-            asaas_service.sincronizar_dados_cobranca_asaas_conta(db, conta)
-            if not asaas_service.conta_tem_meio_pagamento_asaas(conta):
-                raise HTTPException(
-                    status_code=500,
-                    detail=(
-                        "Cobranca Asaas nao gerada (sem link/PIX). "
-                        "Verifique CPF/CNPJ do cliente, condicao de pagamento e integracao Asaas."
-                    ),
-                )
-        db.commit()
-        db.refresh(conta)
-
-        envios = _enviar_lembretes_pos_faturamento(
-            db,
-            cad=cad,
-            conta=conta,
-            dias_antes=dias_antes,
+        venda_id, conta_id = _historico_venda_conta(
+            db, cadastro_id=int(cad.id), data_vencimento=data_vencimento
         )
-        det = f"Venda #{venda.numero} (ID {venda_id}), conta #{conta_id}."
-        if envios:
-            det += " " + " | ".join(envios)
-        elif not cad.botbot_enviar_whatsapp and not cad.botbot_enviar_email:
-            det += " Envio nao configurado no BotBot Config do cadastro."
+        venda = db.get(Venda, int(venda_id)) if venda_id else None
+        conta = db.get(ContaReceber, int(conta_id)) if conta_id else None
+
+        if venda is None:
+            venda = _criar_venda_de_cadastro_info(db, cad)
+            venda.observacao = (
+                f"Gerado automaticamente (faturamento mensalista, venc. "
+                f"{data_vencimento.strftime('%d/%m/%Y')})."
+            )
+            db.flush()
+            _gerar_financeiro_da_venda(db, venda)
+            db.flush()
+            venda_id = int(venda.id)
+            conta = _conta_principal_venda(db, venda_id)
+            if not conta:
+                raise HTTPException(status_code=500, detail="Financeiro gerado sem conta a receber.")
+            conta_id = int(conta.id)
+            _garantir_cobranca_asaas_conta(db, venda=venda, conta=conta)
+            db.commit()
+            db.refresh(conta)
+            # Persiste ids cedo para retomar NFS-e/docs sem novo pedido.
+            _finalizar_faturamento(
+                db,
+                cadastro_id=int(cad.id),
+                data_vencimento=data_vencimento,
+                sucesso=False,
+                detalhe="pedido/financeiro gerados; concluindo envio...",
+                venda_id=venda_id,
+                conta_receber_id=conta_id,
+            )
+            db.commit()
+        else:
+            if conta is None:
+                conta = _conta_principal_venda(db, int(venda.id))
+                if not conta:
+                    raise HTTPException(status_code=500, detail="Venda sem conta a receber.")
+                conta_id = int(conta.id)
+            _garantir_cobranca_asaas_conta(db, venda=venda, conta=conta)
+            db.commit()
+            db.refresh(conta)
+
+        partes: list[str] = [f"Venda #{venda.numero} (ID {venda_id}), conta #{conta_id}."]
+        if _cadastro_exige_documento_fiscal(cad):
+            # MENSALISTA (Documento=Sim): NFS-e + e-mail docs + WhatsApp de aviso (nao e lembrete).
+            partes.extend(
+                _emitir_nfse_e_enviar_documentos(db, cad=cad, venda_id=int(venda_id))
+            )
+        else:
+            # RENT / Documento=Nao: so cobranca (PIX/boleto) + lembrete BotBot.
+            envios = _enviar_lembretes_pos_faturamento(
+                db,
+                cad=cad,
+                conta=conta,
+                dias_antes=dias_antes,
+            )
+            if envios:
+                partes.extend(envios)
+            elif not cad.botbot_enviar_whatsapp and not cad.botbot_enviar_email:
+                partes.append("Envio nao configurado no BotBot Config do cadastro.")
+
+        det = " ".join(partes)
         _finalizar_faturamento(
             db,
             cadastro_id=int(cad.id),
@@ -378,7 +503,10 @@ def _processar_cadastro_faturamento_auto(
         return True, det, venda_id, conta_id
     except HTTPException as exc:
         det = str(exc.detail) if isinstance(exc.detail, str) else str(exc.detail)
-        db.rollback()
+        try:
+            db.rollback()
+        except Exception:
+            pass
         _finalizar_faturamento(
             db,
             cadastro_id=int(cad.id),
@@ -392,7 +520,10 @@ def _processar_cadastro_faturamento_auto(
         return False, det, venda_id, conta_id
     except Exception as exc:  # noqa: BLE001
         det = f"{type(exc).__name__}: {str(exc)[:450]}"
-        db.rollback()
+        try:
+            db.rollback()
+        except Exception:
+            pass
         _finalizar_faturamento(
             db,
             cadastro_id=int(cad.id),
@@ -404,6 +535,75 @@ def _processar_cadastro_faturamento_auto(
         )
         db.commit()
         return False, det, venda_id, conta_id
+
+
+def completar_fluxo_fiscal_pos_faturamento_once(db: Session) -> dict[str, int]:
+    """Completa NFS-e + e-mail docs em faturamentos ja marcados ok sem nota (catch-up)."""
+    stats = {"pendentes": 0, "ok": 0, "falhas": 0}
+    rows = db.execute(
+        text(
+            """
+            SELECT h.cadastro_id, h.data_vencimento, h.venda_id, h.conta_receber_id, h.detalhe
+            FROM faturamento_automatico_historico h
+            JOIN cadastros_gerais c ON c.id = h.cadastro_id
+            JOIN vendas v ON v.id = h.venda_id
+            WHERE h.sucesso = TRUE
+              AND h.venda_id IS NOT NULL
+              AND COALESCE(c.info_documento, FALSE) = TRUE
+              AND (
+                    COALESCE(v.nfse_gerada, FALSE) = FALSE
+                    OR v.documentos_email_enviado_at IS NULL
+                  )
+            ORDER BY h.id ASC
+            LIMIT 25
+            """
+        )
+    ).fetchall()
+    for row in rows:
+        stats["pendentes"] += 1
+        cid = int(row[0])
+        venc = row[1]
+        vid = int(row[2])
+        crid = int(row[3]) if row[3] is not None else None
+        det_ant = str(row[4] or "")
+        cad = db.get(CadastroGeral, cid)
+        if not cad:
+            stats["falhas"] += 1
+            continue
+        try:
+            extras = _emitir_nfse_e_enviar_documentos(db, cad=cad, venda_id=vid)
+            det = (det_ant + " " + " ".join(extras)).strip()[:500]
+            _finalizar_faturamento(
+                db,
+                cadastro_id=cid,
+                data_vencimento=venc,
+                sucesso=True,
+                detalhe=det,
+                venda_id=vid,
+                conta_receber_id=crid,
+            )
+            db.commit()
+            stats["ok"] += 1
+            logger.info("Catch-up fiscal OK cadastro=%s venda=%s: %s", cid, vid, extras)
+        except Exception as exc:  # noqa: BLE001
+            try:
+                db.rollback()
+            except Exception:
+                pass
+            msg = str(getattr(exc, "detail", None) or exc)[:450]
+            _finalizar_faturamento(
+                db,
+                cadastro_id=cid,
+                data_vencimento=venc,
+                sucesso=True,
+                detalhe=(det_ant + f" | Pendente fiscal: {msg}")[:500],
+                venda_id=vid,
+                conta_receber_id=crid,
+            )
+            db.commit()
+            stats["falhas"] += 1
+            logger.warning("Catch-up fiscal falhou cadastro=%s venda=%s: %s", cid, vid, msg)
+    return stats
 
 
 def executar_faturamento_automatico_once(db: Session) -> dict[str, int]:
@@ -496,6 +696,9 @@ def _faturamento_automatico_worker() -> None:
             stats = executar_faturamento_automatico_once(db)
             if stats.get("cadastros") or stats.get("faturados") or stats.get("falhas"):
                 logger.info("Faturamento auto tick: %s", stats)
+            fiscal = completar_fluxo_fiscal_pos_faturamento_once(db)
+            if fiscal.get("pendentes"):
+                logger.info("Faturamento auto catch-up fiscal: %s", fiscal)
         except Exception:
             logger.exception("Falha no worker de faturamento automatico.")
             try:

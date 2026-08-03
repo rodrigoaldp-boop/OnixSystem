@@ -85,6 +85,10 @@ def main() -> None:
         die("fonte sem MENSALISTA — abortando")
     if "_deve_faturar_hoje" not in text:
         die("fonte sem catch-up (_deve_faturar_hoje) — abortando")
+    if "_emitir_nfse_e_enviar_documentos" not in text:
+        die("fonte sem fluxo NFS-e/documentos — abortando")
+    if "completar_fluxo_fiscal_pos_faturamento_once" not in text:
+        die("fonte sem catch-up fiscal — abortando")
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     print(f"fonte md5={md5(SERVICE_SRC)}")
     for root in ROOTS:
