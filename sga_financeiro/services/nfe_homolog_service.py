@@ -27,6 +27,7 @@ from sga_financeiro.services.venda_parcelas_fatura import (
     parcelas_fatura_da_venda,
     texto_prazo_condicao_impressao,
     tpag_nfe_da_venda,
+    xpag_nfe_da_venda,
 )
 
 
@@ -605,11 +606,16 @@ def gerar_nfe_xml_assinado(
     pag = etree.SubElement(inf, f"{{{ns}}}pag")
     det_pag = etree.SubElement(pag, f"{{{ns}}}detPag")
     etree.SubElement(det_pag, f"{{{ns}}}indPag").text = "0" if avista else "1"
-    etree.SubElement(det_pag, f"{{{ns}}}tPag").text = tpag_nfe_da_venda(
+    t_pag = tpag_nfe_da_venda(
         venda,
         t_pag_cfg=str(cfg.get("t_pag", "")).strip() or None,
         avista=avista,
     )
+    etree.SubElement(det_pag, f"{{{ns}}}tPag").text = t_pag
+    # cStat 441: tPag=99 exige xPag (descricao do meio de pagamento)
+    x_pag = xpag_nfe_da_venda(venda, t_pag=t_pag)
+    if x_pag:
+        etree.SubElement(det_pag, f"{{{ns}}}xPag").text = x_pag
     etree.SubElement(det_pag, f"{{{ns}}}vPag").text = _fmt_dec(total_nf, 2)
 
     inf_adic = etree.SubElement(inf, f"{{{ns}}}infAdic")

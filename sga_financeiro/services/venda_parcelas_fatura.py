@@ -99,6 +99,11 @@ def pagamento_eh_avista(
             "debito",
             "credito",
             "integral",
+            "antecipado",
+            "antecipada",
+            "outros",
+            "somente nota",
+            "somente nf",
         )
         if any(k in nome for k in chaves_avista):
             return True
@@ -128,13 +133,36 @@ def tpag_nfe_da_venda(venda: Venda, *, t_pag_cfg: str | None = None, avista: boo
         return "15"
     if "cheque" in nome:
         return "02"
-    # A vista / somente nota / sem meio especifico: nao forcar boleto (15)
-    if avista:
+    # OUTROS / ANTECIPADO / SOMENTE NOTA / a vista generico
+    if "outros" in nome or "antecip" in nome or "somente" in nome or avista:
         return "99"
     cfg = (t_pag_cfg or "").strip()
     if cfg:
         return cfg
     return "99"
+
+
+def xpag_nfe_da_venda(venda: Venda, *, t_pag: str | None = None) -> str | None:
+    """
+    Descricao do pagamento (xPag) — obrigatoria na SEFAZ quando tPag=99 (cStat 441).
+    Limite tipico do schema: 2 a 60 caracteres.
+    """
+    if str(t_pag or "").strip() != "99":
+        return None
+    nome_orig = _nome_condicao_pagamento(venda).strip()
+    nome = _normalizar_texto_pag(nome_orig)
+    if "antecip" in nome:
+        desc = "Pagamento antecipado"
+    elif "somente" in nome:
+        desc = "Pagamento ja realizado"
+    elif nome_orig:
+        desc = nome_orig
+    else:
+        desc = "Pagamento a vista"
+    desc = re.sub(r"\s+", " ", desc).strip()
+    if len(desc) < 2:
+        desc = "Pagamento a vista"
+    return desc[:60]
 
 
 def _texto_prazo_efetivo(venda: Venda) -> str:
