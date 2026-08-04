@@ -115,27 +115,6 @@ NEW_BLOCK = r"""    function _fmtMoneyExtrato(v) {
           '<button type="button" onclick="window.close()">Fechar</button>',
           '<button type="button" id="btnSalvarExtrato">Salvar</button>',
           '</div>',
-          '<script>',
-          '(function(){',
-          'var btn=document.getElementById("btnSalvarExtrato");',
-          'if(!btn) return;',
-          'btn.onclick=function(){',
-          'try{',
-          'var ticket=document.querySelector(".ticket");',
-          'var styles="";',
-          'document.querySelectorAll("style").forEach(function(s){ styles+=s.outerHTML; });',
-          'var bodyHtml=ticket?ticket.outerHTML:document.body.innerHTML;',
-          "var doc='<!doctype html><html><head><meta charset=\"utf-8\"/><title>Extrato #" + id + "</title>'+styles+'</head><body>'+bodyHtml+'</body></html>';",
-          'var blob=new Blob([doc],{type:"text/html;charset=utf-8"});',
-          'var url=URL.createObjectURL(blob);',
-          'var a=document.createElement("a");',
-          'a.href=url; a.download="extrato-divida-' + id + '.html";',
-          'document.body.appendChild(a); a.click(); a.remove();',
-          'setTimeout(function(){URL.revokeObjectURL(url);},1000);',
-          '}catch(e){alert("Nao foi possivel salvar o extrato.");}',
-          '};',
-          '})();',
-          '</script>',
           '<div class="ticket">',
           '<div class="brand">ONIX BRASIL SYSTEM</div>',
           '<div class="subtitle">EXTRATO DA DIVIDA</div>',
@@ -178,6 +157,34 @@ NEW_BLOCK = r"""    function _fmtMoneyExtrato(v) {
         w.document.open();
         w.document.write(html);
         w.document.close();
+        const bindSalvar = function() {
+          try {
+            const btn = w.document.getElementById('btnSalvarExtrato');
+            if (!btn) return;
+            btn.onclick = function() {
+              try {
+                const ticket = w.document.querySelector('.ticket');
+                let styles = '';
+                w.document.querySelectorAll('style').forEach(function(s) { styles += s.outerHTML; });
+                const bodyHtml = ticket ? ticket.outerHTML : w.document.body.innerHTML;
+                const q = String.fromCharCode(34);
+                const doc = '<!doctype html><html><head><meta charset=' + q + 'utf-8' + q + '/><title>Extrato #' + id + '</title>' + styles + '</head><body>' + bodyHtml + '</body></html>';
+                const blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = w.document.createElement('a');
+                a.href = url;
+                a.download = 'extrato-divida-' + id + '.html';
+                w.document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+              } catch (e2) {
+                alert('Nao foi possivel salvar o extrato.');
+              }
+            };
+          } catch (e3) {}
+        };
+        setTimeout(bindSalvar, 50);
         setMsg('statusFinanceiro', 'Extrato bobina 80mm #' + id + ' aberto.', true);
       } catch (err) {
         setMsg('statusFinanceiro', 'Falha no extrato: ' + (err.message || err), false);
