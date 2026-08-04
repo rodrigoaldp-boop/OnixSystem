@@ -100,7 +100,7 @@ NEW_FN = r'''
         linhas.push(sep2);
         linhas.push('Obrigado');
         linhas.push('');
-        const pre = linhas.map(function(x) { return escapeHtml(x); }).join('\n');
+        const pre = linhas.map(function(x) { return escapeHtml(x); }).join(String.fromCharCode(10));
         const html = '<!doctype html><html><head><meta charset="utf-8"/>' +
           '<title>Extrato bobina 80mm #' + id + '</title>' +
           '<style>' +
