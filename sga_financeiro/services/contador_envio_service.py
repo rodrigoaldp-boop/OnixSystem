@@ -456,6 +456,26 @@ def _formatar_valor_csv(val: Any) -> str:
         return str(val).strip()
 
 
+def _formatar_moeda_csv(val: Any) -> str:
+    """Valor monetario com mascara R$ (pt-BR), ex.: R$ 1.250,00."""
+    if val is None or val == "":
+        return ""
+    try:
+        n = Decimal(str(val))
+    except (InvalidOperation, ValueError, TypeError):
+        s = str(val).strip()
+        return s if s.upper().startswith("R$") else s
+    sinal = "-" if n < 0 else ""
+    n = abs(n).quantize(Decimal("0.01"))
+    inteiro, centavos = f"{n:.2f}".split(".")
+    grupos = []
+    while inteiro:
+        grupos.append(inteiro[-3:])
+        inteiro = inteiro[:-3]
+    inteiro_fmt = ".".join(reversed(grupos))
+    return f"{sinal}R$ {inteiro_fmt},{centavos}"
+
+
 def _parse_valor_csv(val: Any) -> Decimal:
     if val is None or val == "":
         return Decimal("0")
@@ -466,6 +486,7 @@ def _parse_valor_csv(val: Any) -> Decimal:
     s = str(val).strip().replace("\t", "").replace(" ", "")
     if not s:
         return Decimal("0")
+    s = s.replace("R$", "").replace("r$", "").strip()
     if "," in s and "." in s:
         s = s.replace(".", "").replace(",", ".")
     elif "," in s:
@@ -602,7 +623,7 @@ def _linhas_nfe_rel_saida(engine: Engine, inicio: date, fim: date) -> list[list[
                 "sim" if cancelada else "nao",
                 str(r.get("nfe_protocolo_cancelamento") or "").strip(),
                 _formatar_data_csv(r.get("nfe_cancelada_em")) if cancelada else "",
-                _formatar_valor_csv(r.get("total_liquido")),
+                _formatar_moeda_csv(r.get("total_liquido")),
                 r.get("cliente_nome") or "",
             ]
         )
@@ -617,7 +638,7 @@ def _coletar_nfe_rel_saida(engine: Engine, inicio: date, fim: date) -> bytes:
     linhas_out = list(linhas)
     if linhas_out:
         linhas_out.append(
-            ["TOTAL", "", "", "", "", "", "", "", _formatar_valor_csv(total), ""]
+            ["TOTAL", "", "", "", "", "", "", "", _formatar_moeda_csv(total), ""]
         )
     return _csv_bytes(
         [
@@ -724,7 +745,7 @@ def _linhas_nfse_rel_saida(engine: Engine, inicio: date, fim: date) -> list[list
                 r.get("numero") or "",
                 _formatar_data_csv(r.get("data_pedido") or r.get("created_at")),
                 str(r.get("nfse_id_dps") or "").strip(),
-                _formatar_valor_csv(r.get("total_liquido")),
+                _formatar_moeda_csv(r.get("total_liquido")),
                 r.get("cliente_nome") or "",
             ]
         )
@@ -733,12 +754,12 @@ def _linhas_nfse_rel_saida(engine: Engine, inicio: date, fim: date) -> list[list
 
 def _coletar_nfse_rel_saida(engine: Engine, inicio: date, fim: date) -> bytes:
     linhas = _linhas_nfse_rel_saida(engine, inicio, fim)
-    # Valor pedido = indice 5
+    # Valor pedido = indice 5 — total = soma de todas as notas do periodo
     total = _somar_coluna_valores(linhas, 5)
     linhas_out = list(linhas)
     if linhas_out:
         linhas_out.append(
-            ["TOTAL", "", "", "", "", _formatar_valor_csv(total), ""]
+            ["TOTAL", "", "", "", "", _formatar_moeda_csv(total), ""]
         )
     return _csv_bytes(
         [
