@@ -13,11 +13,25 @@ DB_PASSWORD="postgres"
 echo "== Onix System | Cloud Agent install =="
 
 # 1) System packages (PostgreSQL server + Python build/runtime deps).
-if ! command -v psql >/dev/null 2>&1 || [ ! -d "$ROOT/.venv" ]; then
-  sudo apt-get update -qq
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    postgresql postgresql-contrib libpq-dev \
-    python3-venv python3-pip build-essential
+# Snapshots that already contain PostgreSQL skip apt entirely; a clean base
+# image installs it here, retrying to tolerate transient mirror/proxy errors.
+if ! command -v psql >/dev/null 2>&1; then
+  apt_install() {
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing \
+      postgresql postgresql-contrib libpq-dev \
+      python3-venv python3-pip build-essential
+  }
+  installed=0
+  for attempt in 1 2 3; do
+    sudo apt-get update -qq || true
+    if apt_install; then installed=1; break; fi
+    echo "apt install attempt ${attempt} failed; retrying..." >&2
+    sleep $((attempt * 5))
+  done
+  if [ "$installed" -ne 1 ]; then
+    echo "ERROR: failed to install system packages after retries." >&2
+    exit 1
+  fi
 fi
 
 # 2) Python virtualenv + dependencies.
