@@ -50,5 +50,6 @@ class ContaReceberOut(ContaReceberBase):
     data_recebimento: Optional[date] = None
     status: StatusContaReceber
     created_at: datetime
+    forma_recebimento: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

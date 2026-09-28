@@ -2461,6 +2461,30 @@ def app_demo():
       vertical-align: middle;
       font-weight: 600;
     }
+    .fin-recebimento {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    .fin-pix-dot {
+      width: 10px;
+      height: 10px;
+      min-width: 10px;
+      border-radius: 999px;
+      background: #16a34a;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.18);
+      display: inline-block;
+    }
+    th.fin-valor,
+    td.fin-valor {
+      white-space: nowrap;
+      text-align: right;
+      min-width: 120px;
+      font-variant-numeric: tabular-nums;
+    }
     body[data-theme="dark"] .tag {
       background: linear-gradient(180deg, #1e293b, #172033);
       border-color: #334155;
@@ -10371,6 +10395,18 @@ def app_demo():
         });
     }
 
+    function ehFormaPix(nome) {
+      return /(^|[^a-z0-9])pix([^a-z0-9]|$)/i.test(String(nome || ''));
+    }
+
+    function htmlRecebimentoFinanceiro(conta) {
+      const nome = String((conta && conta.forma_recebimento) || '').trim();
+      if (!nome) return '-';
+      const safe = escapeHtmlRelatorio(nome);
+      if (!ehFormaPix(nome)) return safe;
+      return `<span class="fin-recebimento"><span class="fin-pix-dot" title="PIX" aria-label="PIX"></span><span>${safe}</span></span>`;
+    }
+
     function textoCartaoFaturaHtml(conta) {
       if (tipoFinanceiroAtual() !== 'pagar') return '-';
       const c = (conta.cartao_label || '').trim();
@@ -10383,6 +10419,11 @@ def app_demo():
 
     function renderContasFinanceiro() {
       const tbContas = document.getElementById('tbContasFinanceiro');
+      const thead = tbContas.parentElement ? tbContas.parentElement.querySelector('thead') : null;
+      const mostrarRecebimento = tipoFinanceiroAtual() === 'receber';
+      if (thead) {
+        thead.innerHTML = `<tr><th>Sel.</th><th>ID</th><th>Parte</th><th>Descricao</th>${mostrarRecebimento ? '<th>Recebimento</th>' : ''}<th>Cartao / fatura</th><th>Vencimento</th><th>Status</th><th class="fin-valor">Valor</th></tr>`;
+      }
       tbContas.innerHTML = '';
       const contasVisiveis = contasFinanceiroCache
         .filter(conta => isContaExibidaNaAba(conta))
@@ -10423,7 +10464,8 @@ def app_demo():
         };
         const checked = contasFinanceiroSelecionadas.has(conta.id) ? 'checked' : '';
         const cartFat = textoCartaoFaturaHtml(conta);
-        tr.innerHTML = `<td><input id="${checkboxId}" type="checkbox" ${checked} onclick="event.stopPropagation()" onchange="selecionarContaFinanceira(${conta.id}, this.checked)" /></td><td>${conta.id}</td><td>${nomeParte}</td><td>${conta.descricao || '-'}</td><td>${cartFat}</td><td>${(conta.data_vencimento || '').slice(0, 10)}</td><td><span class="tag">${conta.status || '-'}</span></td><td>${moeda(conta.valor)}</td>`;
+        const recebCell = mostrarRecebimento ? `<td>${htmlRecebimentoFinanceiro(conta)}</td>` : '';
+        tr.innerHTML = `<td><input id="${checkboxId}" type="checkbox" ${checked} onclick="event.stopPropagation()" onchange="selecionarContaFinanceira(${conta.id}, this.checked)" /></td><td>${conta.id}</td><td>${nomeParte}</td><td>${conta.descricao || '-'}</td>${recebCell}<td>${cartFat}</td><td>${(conta.data_vencimento || '').slice(0, 10)}</td><td><span class="tag">${conta.status || '-'}</span></td><td class="fin-valor">${moeda(conta.valor)}</td>`;
         tbContas.appendChild(tr);
       });
       const rotulo = abaFinanceiroHistorico() ? 'historico' : 'aberta(s)';
