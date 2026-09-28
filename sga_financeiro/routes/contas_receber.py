@@ -13,6 +13,7 @@ from sga_financeiro.models.cadastro_geral import CadastroGeral
 from sga_financeiro.models.categoria import Categoria, TipoCategoria
 from sga_financeiro.models.categoria_produto import CategoriaProduto
 from sga_financeiro.models.centro_custos import CentroCustos
+from sga_financeiro.models.condicao_pagamento import CondicaoPagamento
 from sga_financeiro.models.conta_corrente import ContaCorrente
 from sga_financeiro.models.conta_pagar import ContaPagar, StatusContaPagar
 from sga_financeiro.models.conta_receber import ContaReceber, StatusContaReceber
@@ -135,9 +136,28 @@ def _gerar_comissao_no_recebimento(db: Session, conta_receber: ContaReceber) -> 
     conta_receber.comissao_gerada = True
 
 
+def _anexar_forma_recebimento(db: Session, contas: list[ContaReceber]) -> list[ContaReceber]:
+    """Preenche a forma de recebimento a partir da condicao de pagamento da venda."""
+    venda_ids = {conta.venda_id for conta in contas if conta.venda_id}
+    nomes: dict[int, str] = {}
+    if venda_ids:
+        rows = (
+            db.query(Venda.id, CondicaoPagamento.nome)
+            .outerjoin(CondicaoPagamento, Venda.condicao_pagamento_id == CondicaoPagamento.id)
+            .filter(Venda.id.in_(venda_ids))
+            .all()
+        )
+        nomes = {venda_id: (nome or "").strip() for venda_id, nome in rows}
+    for conta in contas:
+        nome = nomes.get(conta.venda_id) if conta.venda_id else ""
+        conta.forma_recebimento = nome or None
+    return contas
+
+
 @router.get("", response_model=list[ContaReceberOut])
 def listar(db: Session = Depends(get_db)) -> list[ContaReceber]:
-    return db.query(ContaReceber).order_by(ContaReceber.data_vencimento.asc()).all()
+    contas = db.query(ContaReceber).order_by(ContaReceber.data_vencimento.asc()).all()
+    return _anexar_forma_recebimento(db, contas)
 
 
 @router.post("", response_model=ContaReceberOut, status_code=status.HTTP_201_CREATED)
